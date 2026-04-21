@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>日常・定期点検表 2026年4月度</title>
+<style>
+/* ─── RESET & BASE ─────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box; margin: 0; padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+body {
+  font-family: 'Hiragino Sans', 'Noto Sans JP', 'Yu Gothic UI', sans-serif;
+  font-size: 13px;
+  background: #EAECF0;
+  color: #2C3E50;
+  min-height: 100vh;
+  padding-bottom: 30px;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* ─── APP HEADER ────────────────────────────────── */
+.app-header {
+  background: linear-gradient(135deg, #2C3E50 0%, #1A252F 100%);
+  color: #fff;
+  padding: 12px 14px 10px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.30);
+}
+.app-header-title {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-align: center;
+  margin-bottom: 8px;
+  color: #F1F2F6;
+}
+.equip-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  justify-content: center;
+}
+.equip-chip {
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.22);
+  border-radius: 5px;
+  padding: 2px 8px;
+  font-size: 10px;
+  color: #CDD3DA;
+  letter-spacing: 0.02em;
+}
+.equip-chip b { color: #F1C40F; font-weight: 700; }
+
+/* ─── SHARED CARD ───────────────────────────────── */
+.card {
+  background: #fff;
+  margin: 6px 10px 0;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+  overflow: hidden;
+}
+.card-body { padding: 12px 14px; }
+
+/* ─── CARD SECTION TITLE ────────────────────────── */
+.cst {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.10em;
+  color: #7F8C8D;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 10px;
+}
+.cst-bar {
+  display: block;
+  width: 3px;
+  height: 13px;
+  border-radius: 2px;
+  background: #2C3E50;
+  flex-shrink: 0;
+}
+.cst-bar.red { background: #E74C3C; }
+.cst-bar.green { background: #27AE60; }
+
+/* ─── INSPECTOR SECTION ─────────────────────────── */
+.inspector-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.10em;
+  color: #95A5A6;
+  text-transform: uppercase;
+  margin-bottom: 9px;
+}
+.inspector-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.insp-chip {
+  padding: 6px 16px;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 20px;
+  background: #fff;
+  color: #4A5568;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 700;
+  transition: all 0.15s ease;
+  min-height: 36px;
+  letter-spacing: 0.02em;
+}
+.insp-chip:active { transform: scale(0.93); }
+.insp-chip.active {
+  border-color: #2C3E50;
+  background: #2C3E50;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(44,62,80,0.3);
+}
+#insp-warn {
+  font-size: 11px; color: #E74C3C; font-weight: 700;
+  margin-top: 8px; display: none;
+  animation: shake 0.35s ease;
+}
+@keyframes shake {
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-5px)}
+  60%{transform:translateX(5px)}
+}
+#insp-info {
+  font-size: 11px; color: #27AE60; margin-top: 8px;
+  font-weight: 600; display: none;
+}
+
+/* ─── TABLE WRAPPER ─────────────────────────────── */
+.table-scroll-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+}
+table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  min-width: 800px;
+}
+th, td { border: 1px solid #E4E7EC; vertical-align: middle; }
+
+/* Sticky */
+.s0 { position: sticky; left: 0;    z-index: 2; }
+.s1 { position: sticky; left: 26px; z-index: 2; }
+.s2 { position: sticky; left: 46px; z-index: 2; }
+.s3 { position: sticky; left: 76px; z-index: 2; }
+.s-hdr { z-index: 3 !important; }
+
+/* ─── DAY HEADER ────────────────────────────────── */
+.day-hdr {
+  text-align: center;
+  font-size: 10px;
+  padding: 4px 0;
+  background: #F4F6F8;
+  font-weight: 700;
+  color: #6B7280;
+  min-width: 26px;
+}
+.day-hdr.ten  { background: #DBEAFE; color: #1D4ED8; }
+.day-hdr.today{
+  background: #FFF3CD;
+  color: #B45309;
+  font-weight: 800;
+  outline: 2px solid #F59E0B;
+  outline-offset: -2px;
+  z-index: 1;
+}
+
+/* ─── SECTION LABEL ─────────────────────────────── */
+.sec-lbl {
+  width: 26px; min-width: 26px;
+  text-align: center;
+  font-size: 9px; font-weight: 800;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  padding: 4px 2px;
+  white-space: nowrap;
+  letter-spacing: 0.15em;
+  vertical-align: middle;
+}
+.sec-daily { background: #D1FAE5; color: #065F46; }
+.sec-ten   { background: #DBEAFE; color: #1E40AF; }
+.sec-mon   { background: #FEE2E2; color: #991B1B; }
+
+/* ─── NO CELL ───────────────────────────────────── */
+.no-cell {
+  width: 20px; min-width: 20px;
+  text-align: center;
+  font-size: 10px; font-weight: 700;
+  padding: 2px;
+  background: #F9FAFB;
+  color: #6B7280;
+}
+.no-cell.tencat {
+  font-size: 8px; white-space: pre-line;
+  line-height: 1.2; padding: 2px 1px;
+  background: #EFF6FF; color: #1D4ED8;
+}
+.no-cell.mon { background: #FEF3C7; color: #92400E; }
+
+/* ─── DESC CELL ─────────────────────────────────── */
+.desc-cell {
+  width: 118px; min-width: 118px; max-width: 118px;
+  font-size: 11px;
+  padding: 4px 6px; line-height: 1.35;
+  cursor: pointer; overflow: hidden;
+  background: #FDFDFD; color: #2C3E50;
+  white-space: nowrap; text-overflow: ellipsis;
+}
+.desc-cell.ten { background: #F0F7FF; }
+.desc-cell.mon { background: #FFFBEB; }
+.desc-cell:hover { background: #F0F4FF; }
+
+/* ─── DATA CELLS ────────────────────────────────── */
+.dcell {
+  text-align: center;
+  min-height: 48px;
+  height: 48px;
+  font-size: 17px;
+  font-weight: 800;
+  padding: 0;
+  cursor: pointer;
+  user-select: none; -webkit-user-select: none;
+  background: #fff;
+  transition: background 0.10s ease;
+  min-width: 26px;
+}
+.dcell:active { opacity: 0.65; }
+.dcell.inactive { background: #E5E7EB; cursor: default; color: #D1D5DB; }
+.dcell.today-col { background: #FFFBEB; }
+.dcell.ok   { color: #16A34A; background: #F0FDF4; }
+.dcell.ok.today-col  { background: #DCFCE7; }
+.dcell.ng   { color: #DC2626; background: #FEF2F2; }
+.dcell.ng.today-col  { background: #FEE2E2; }
+.dcell.na   { color: #9CA3AF; background: #F9FAFB; font-size: 14px; }
+.dcell.holiday {
+  background: repeating-linear-gradient(
+    135deg,
+    #F3F4F6,
+    #F3F4F6 3px,
+    #E5E7EB 3px,
+    #E5E7EB 7px
+  );
+  cursor: default; color: transparent;
+}
+.day-hdr.holiday {
+  background: repeating-linear-gradient(
+    135deg,
+    #FEE2E2,
+    #FEE2E2 3px,
+    #FECACA 3px,
+    #FECACA 7px
+  );
+  color: #DC2626;
+}
+.sign-cell.holiday {
+  background: repeating-linear-gradient(
+    135deg,
+    #F3F4F6,
+    #F3F4F6 3px,
+    #E5E7EB 3px,
+    #E5E7EB 7px
+  );
+  cursor: default;
+}
+
+/* ─── SIGN ROW ──────────────────────────────────── */
+.sign-hdr {
+  font-size: 8px; font-weight: 700;
+  text-align: left; padding: 3px 5px;
+  background: #EFF6FF; color: #1E40AF;
+  letter-spacing: 0.01em;
+  white-space: normal;
+  line-height: 1.3;
+  word-break: keep-all;
+}
+.sign-cell {
+  text-align: center; font-size: 8px;
+  height: 22px; padding: 0;
+  background: #F3F4F6; color: #D1D5DB;
+}
+.sign-cell.active  { background: #DBEAFE; cursor: pointer; color: #6B7280; }
+.sign-cell.active:active { background: #BFDBFE; }
+.sign-cell.signed  { color: #1D4ED8; font-weight: 700; background: #BFDBFE; }
+
+/* ─── FINAL ROW ─────────────────────────────────── */
+.final-hdr {
+  font-size: 8px; font-weight: 700;
+  padding: 3px 5px;
+  background: #FEF3C7; color: #92400E;
+  white-space: normal; line-height: 1.3;
+}
+.final-cell { background: #F3F4F6; }
+.final-cell.last { background: #FDE68A; }
+
+/* ─── LEGEND ────────────────────────────────────── */
+.legend-wrap {
+  display: flex; align-items: center;
+  gap: 14px; flex-wrap: wrap;
+  padding: 10px 14px;
+}
+.legend-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600; color: #374151;
+}
+.l-badge {
+  width: 30px; height: 30px; border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 800;
+}
+.l-ok { background: #F0FDF4; color: #16A34A; }
+.l-ng { background: #FEF2F2; color: #DC2626; }
+.l-na { background: #F9FAFB; color: #9CA3AF; font-size: 14px; }
+.legend-hint {
+  margin-left: auto; font-size: 10px; color: #9CA3AF; white-space: nowrap;
+}
+
+/* ─── NOTES ─────────────────────────────────────── */
+.notes-card {
+  background: #FFFBEB;
+  margin: 6px 10px 0;
+  border-radius: 10px;
+  border-left: 4px solid #F59E0B;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  padding: 10px 14px;
+}
+.notes-card p {
+  font-size: 10px; color: #78350F; line-height: 1.9;
+}
+.notes-card p::before { content: '・'; color: #D97706; }
+
+/* ─── ANOMALY TABLE ──────────────────────────────── */
+#anomaly-tbl {
+  width: 100%; border-collapse: collapse;
+  font-size: 11px; min-width: 300px;
+}
+#anomaly-tbl th {
+  border: 1px solid #E4E7EC;
+  padding: 6px 6px;
+  background: #F4F6F8; text-align: center;
+  font-size: 10px; font-weight: 800;
+  color: #6B7280; letter-spacing: 0.05em;
+}
+#anomaly-tbl td {
+  border: 1px solid #E4E7EC;
+  padding: 5px 6px; min-height: 36px; height: 36px;
+}
+.improve-cell {
+  background: #FEFCE8; color: #9CA3AF;
+  cursor: pointer; font-size: 10px; font-style: italic;
+}
+.improve-cell.filled {
+  background: #F0FDF4; color: #16A34A;
+  font-style: normal; font-weight: 700;
+}
+.improve-cell:active { background: #DCFCE7; }
+.empty-row td { height: 30px; background: #FAFAFA; }
+
+/* ─── APPROVAL ──────────────────────────────────── */
+.approval-row { display: flex; gap: 8px; }
+.appr-btn {
+  flex: 1; padding: 11px 5px;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 10px;
+  background: #fff;
+  color: #6B7280;
+  font-size: 10px; cursor: pointer;
+  text-align: center;
+  font-family: inherit; font-weight: 600;
+  transition: all 0.2s ease;
+  min-height: 72px; line-height: 1;
+}
+.appr-btn:active { transform: scale(0.96); }
+.appr-btn.approved {
+  border-color: #16A34A;
+  background: linear-gradient(135deg, #22C55E 0%, #15803D 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(22,163,74,0.35);
+}
+.appr-role  { font-size: 11px; font-weight: 700; display: block; margin-bottom: 6px; }
+.appr-status{ font-size: 13px; font-weight: 800; display: block; }
+.appr-btn:not(.approved) .appr-status { color: #CBD5E1; font-size: 11px; font-weight: 600; }
+
+/* ─── MODAL ─────────────────────────────────────── */
+#modal-overlay {
+  display: none;
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(15,20,30,0.65);
+  z-index: 200;
+  align-items: flex-start; justify-content: center;
+  padding: 70px 14px 20px;
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+#modal-overlay.show { display: flex; }
+#modal-box {
+  background: #fff;
+  border-radius: 16px;
+  padding: 18px 18px 16px;
+  width: 100%; max-width: 380px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.35);
+  animation: mUp 0.22s ease;
+}
+@keyframes mUp {
+  from { transform: translateY(22px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.modal-hd {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 12px; padding-bottom: 12px;
+  border-bottom: 1px solid #F1F3F5;
+}
+#modal-title { font-weight: 800; font-size: 13px; color: #DC2626; }
+#modal-sub { font-size: 11px; color: #9CA3AF; margin-bottom: 10px; }
+#anomaly-input {
+  width: 100%; height: 88px;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 9px; padding: 9px 11px;
+  font-size: 13px; resize: none;
+  font-family: inherit; color: #2C3E50; outline: none;
+  background: #FAFAFA;
+}
+#anomaly-input:focus { border-color: #2C3E50; background: #fff; }
+#modal-btns { display: flex; gap: 8px; margin-top: 12px; }
+#modal-save {
+  flex: 1; padding: 12px;
+  background: #DC2626; color: #fff;
+  border: none; border-radius: 9px;
+  font-weight: 800; font-size: 13px;
+  cursor: pointer; font-family: inherit;
+  letter-spacing: 0.02em;
+}
+#modal-save:active { background: #B91C1C; }
+#modal-cancel {
+  padding: 12px 16px;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 9px; background: #fff;
+  font-size: 13px; cursor: pointer;
+  font-family: inherit; color: #6B7280;
+}
+/* ─── STARTUP MODAL ─────────────────────────────── */
+#startup-overlay {
+  display: flex;
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(15,20,30,0.70);
+  z-index: 300;
+  align-items: center; justify-content: center;
+  padding: 20px;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+#startup-box {
+  background: #fff;
+  border-radius: 18px;
+  padding: 26px 22px 22px;
+  width: 100%; max-width: 340px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.35);
+  animation: mUp 0.25s ease;
+}
+#startup-title {
+  font-size: 15px; font-weight: 800;
+  color: #2C3E50; text-align: center;
+  margin-bottom: 4px;
+}
+#startup-sub {
+  font-size: 11px; color: #9CA3AF;
+  text-align: center; margin-bottom: 18px;
+}
+.startup-chips {
+  display: flex; flex-wrap: wrap;
+  gap: 9px; justify-content: center;
+  margin-bottom: 8px;
+}
+.startup-chip {
+  padding: 10px 20px;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 24px;
+  background: #fff; color: #374151;
+  font-size: 14px; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+  transition: all 0.15s ease;
+}
+.startup-chip:active { transform: scale(0.93); }
+.startup-chip.selected {
+  border-color: #2C3E50;
+  background: #2C3E50; color: #fff;
+  box-shadow: 0 2px 8px rgba(44,62,80,0.3);
+}
+#startup-start {
+  width: 100%; padding: 14px;
+  background: #2C3E50; color: #fff;
+  border: none; border-radius: 10px;
+  font-size: 14px; font-weight: 800;
+  cursor: pointer; font-family: inherit;
+  margin-top: 16px; letter-spacing: 0.04em;
+  opacity: 0.35; pointer-events: none;
+  transition: opacity 0.2s;
+}
+#startup-start.ready { opacity: 1; pointer-events: auto; }
+#startup-start:active { background: #1A252F; }
+
+</style>
+</head>
+<body>
+
+<!-- ━━ HEADER ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="app-header">
+  <div class="app-header-title">日常・定期点検表　（2026年　4月度）</div>
+  <div class="equip-chips">
+    <div class="equip-chip">設備No. <b>2-A41-048</b></div>
+    <div class="equip-chip">設備名 <b>NC旋盤</b></div>
+    <div class="equip-chip">型式 <b>日立 TS15</b></div>
+    <div class="equip-chip">管理部門 <b>M課</b></div>
+    <div class="equip-chip" id="header-inspector" style="display:none;background:rgba(39,174,96,0.25);border-color:rgba(39,174,96,0.5)">点検者 <b id="header-inspector-name"></b></div>
+  </div>
+</div>
+
+<!-- ━━ STARTUP MODAL ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div id="startup-overlay">
+  <div id="startup-box">
+    <div id="startup-title">点検者を選択してください</div>
+    <div id="startup-sub">本日の点検を担当する方を選んでください</div>
+    <div class="startup-chips">
+      <button class="startup-chip" onclick="pickInspector(this,'田中')">田中</button>
+      <button class="startup-chip" onclick="pickInspector(this,'鈴木')">鈴木</button>
+      <button class="startup-chip" onclick="pickInspector(this,'佐藤')">佐藤</button>
+      <button class="startup-chip" onclick="pickInspector(this,'山田')">山田</button>
+      <button class="startup-chip" onclick="pickInspector(this,'伊藤')">伊藤</button>
+    </div>
+    <button id="startup-start" onclick="startApp()">点検を開始する</button>
+  </div>
+</div>
+
+<!-- ━━ DAILY TABLE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="card">
+  <div class="table-scroll-wrap">
+    <table id="daily-table">
+      <colgroup>
+        <col style="width:26px">
+        <col style="width:20px">
+        <col style="width:118px">
+      </colgroup>
+      <thead id="daily-thead"></thead>
+      <tbody id="daily-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ━━ 10-DAY TABLE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="card">
+  <div class="table-scroll-wrap">
+    <table id="tenday-table" style="min-width:unset;width:100%;">
+      <colgroup>
+        <col style="width:26px">
+        <col style="width:34px">
+        <col style="width:22px">
+        <col style="width:140px">
+      </colgroup>
+      <thead id="tenday-thead"></thead>
+      <tbody id="tenday-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ━━ MONTHLY TABLE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="card">
+  <div class="table-scroll-wrap">
+    <table id="monthly-table">
+      <colgroup>
+        <col style="width:26px">
+        <col style="width:20px">
+        <col style="width:118px">
+        <col style="width:50px">
+        <col style="width:60px">
+      </colgroup>
+      <thead id="monthly-thead"></thead>
+      <tbody id="monthly-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ━━ LEGEND ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="card">
+  <div class="legend-wrap">
+    <div class="legend-item"><div class="l-badge l-ok">○</div><span>正常</span></div>
+    <div class="legend-item"><div class="l-badge l-ng">×</div><span>異常</span></div>
+    <div class="legend-item"><div class="l-badge l-na">／</div><span>対象外</span></div>
+    <span class="legend-hint">タップで切替</span>
+  </div>
+</div>
+
+<!-- ━━ NOTES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="notes-card">
+  <p>点検項目がない場合は ／ を記入する</p>
+  <p>異常時は下記記録欄に記入し、復旧後は改善内容欄に具体的に記入</p>
+  <p>毎月（定期）点検は月末に行う。10日毎に上司確認、最終M課責任者が確認し保管</p>
+</div>
+
+<!-- ━━ ANOMALY RECORDS ━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="card">
+  <div class="card-body">
+    <div class="cst"><span class="cst-bar red"></span>復旧・改善記録</div>
+    <div style="overflow-x:auto">
+      <table id="anomaly-tbl">
+        <thead>
+          <tr>
+            <th style="width:40px">日付</th>
+            <th style="width:28px">No</th>
+            <th>異常内容</th>
+            <th>改善内容</th>
+          </tr>
+        </thead>
+        <tbody id="anomaly-tbody">
+          <tr class="empty-row"><td></td><td></td><td></td><td></td></tr>
+          <tr class="empty-row"><td></td><td></td><td></td><td></td></tr>
+          <tr class="empty-row"><td></td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ━━ APPROVAL ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="card">
+  <div class="card-body">
+    <div class="cst"><span class="cst-bar"></span>承認フロー</div>
+    <div class="approval-row">
+      <button class="appr-btn" id="appr-inspector" onclick="toggleApproval('inspector')">
+        <span class="appr-role">点検者確認</span>
+        <span class="appr-status" id="appr-inspector-status">未承認</span>
+      </button>
+      <button class="appr-btn" id="appr-supervisor" onclick="toggleApproval('supervisor')">
+        <span class="appr-role">上司確認</span>
+        <span class="appr-status" id="appr-supervisor-status">未承認</span>
+      </button>
+      <button class="appr-btn" id="appr-manager" onclick="toggleApproval('manager')">
+        <span class="appr-role">M課<br>責任者承認</span>
+        <span class="appr-status" id="appr-manager-status">未承認</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ━━ ANOMALY MODAL ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div id="modal-overlay">
+  <div id="modal-box">
+    <div class="modal-hd">
+      <div id="modal-title"></div>
+    </div>
+    <div id="modal-sub">異常内容を入力してください（後から改善内容を追記できます）</div>
+    <textarea id="anomaly-input" placeholder="例：油漏れ確認、上司へ報告済"></textarea>
+    <div id="modal-btns">
+      <button id="modal-save" onclick="saveAnomaly()">記録して閉じる</button>
+      <button id="modal-cancel" onclick="closeModal()">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════ DATA ═══════════════════════════ */
+const DAYS_IN_MONTH = 30;
+const TEN_DAY_COLS  = [10, 20, 30];
+// 2026年4月 土日・祝日（昭和の日=29日）
+const HOLIDAY_COLS  = [4, 5, 11, 12, 18, 19, 25, 26, 29];
+const TODAY         = new Date().getDate();
+
+const DAILY_ITEMS = [
+  { id:1, short:'潤滑油量確認',        full:'潤滑油量は規定量以上あるか？\n規定以下の場合補充（減っていなくても異常→上司へ報告）' },
+  { id:2, short:'キリコ堆積確認',      full:'機械動作部の周りにキリコが大量に溜まっていないか？\n→溜まっていたら清掃' },
+  { id:3, short:'油漏れ/エア漏れ確認', full:'設備周りに油漏れ・エア漏れの現象はないか？\n→漏れ発見時上司へ報告' },
+  { id:4, short:'制御盤扉確認',        full:'制御盤扉が閉まっている事\n→開いていたら上司へ報告' },
+];
+const TEN_DAY_ITEMS = [
+  { id:5, cat:'制御盤',       catSpan:2, short:'制御盤フィルター清掃',      full:'制御盤フィルター（メッシュタイプ）清掃（エアブロー）' },
+  { id:6, cat:'制御盤',       catSpan:0, short:'外部ファン清掃・回転確認',  full:'制御盤外部ファン、フィンの清掃（エアブロー）、回転確認' },
+  { id:7, cat:'油圧\nユニット', catSpan:2, short:'油圧ポンプ清掃・回転確認', full:'油圧ポンプラジエター、ファン清掃（エアブロー）、回転確認' },
+  { id:8, cat:'油圧\nユニット', catSpan:0, short:'作動油量確認',            full:'油圧ユニット作動油量が規定以上ある事' },
+  { id:9, cat:'オイル\nクーラー', catSpan:1, short:'クーラーフィルタ清掃',  full:'クーラーフィルタの清掃（エアーブロー）' },
+];
+const MONTHLY_ITEMS = [
+  { id:10, short:'制御盤フィルタ交換',         full:'制御盤フィルタ交換（ファイバー）→交換日をフィルタへ記入' },
+  { id:11, short:'バッテリー・オイル交換確認', full:'バッテリー、オイル交換時期が経過していないか →交換日を記入' },
+  { id:12, short:'設備周り汚れ・破損確認',     full:'設備周りのひどい汚れ、破損がないか' },
+];
+const ALL_ITEMS    = [...DAILY_ITEMS, ...TEN_DAY_ITEMS, ...MONTHLY_ITEMS];
+const STATUS_CYCLE = ['', '○', '×', '／'];
+
+/* ═══════════════════ STATE ══════════════════════════ */
+let currentInspector = '';
+let records      = {};
+let signRecords  = {};
+let anomalyList  = [];
+let approvalState = { inspector: null, supervisor: null, manager: null };
+let pendingModal  = null;
+
+/* ═══════════════════ BUILD TABLE ════════════════════ */
+function buildTable() {
+  buildDailyTable();
+  buildTenDayTable();
+  buildMonthlyTable();
+}
+
+/* ─── DAILY TABLE ─────────────────────────────────────── */
+function buildDailyTable() {
+  const cg = document.querySelector('#daily-table colgroup');
+  while (cg.children.length > 3) cg.removeChild(cg.lastChild);
+  for (let d = 1; d <= DAYS_IN_MONTH; d++) {
+    const c = document.createElement('col');
+    cg.appendChild(c);
+  }
+  const thead = document.getElementById('daily-thead');
+  thead.innerHTML = '';
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <th class="s0 s-hdr sec-lbl" style="background:#E5E7EB;writing-mode:horizontal-tb;font-size:10px;padding:2px 1px;text-align:center;color:#6B7280;">区分</th>
+    <th class="s1 s-hdr no-cell" style="background:#E5E7EB;font-size:10px;font-weight:800;text-align:center;color:#374151;">No</th>
+    <th class="s2 s-hdr desc-cell" style="background:#E5E7EB;font-size:11px;font-weight:800;text-align:center;cursor:default;color:#374151;">点　検　項　目</th>
+  `;
+  for (let d = 1; d <= DAYS_IN_MONTH; d++) {
+    const th = document.createElement('th');
+    let cls = 'day-hdr';
+    if (TEN_DAY_COLS.includes(d)) cls += ' ten';
+    if (HOLIDAY_COLS.includes(d)) cls += ' holiday';
+    if (d === TODAY) cls += ' today';
+    th.className = cls;
+    th.textContent = d;
+    tr.appendChild(th);
+  }
+  thead.appendChild(tr);
+
+  const tbody = document.getElementById('daily-tbody');
+  tbody.innerHTML = '';
+  DAILY_ITEMS.forEach((item, idx) => {
+    const tr = document.createElement('tr');
+    if (idx === 0) {
+      const td = document.createElement('td');
+      td.className = 's0 sec-lbl sec-daily';
+      td.rowSpan = DAILY_ITEMS.length;
+      td.textContent = '日常点検';
+      tr.appendChild(td);
+    }
+    tr.appendChild(makeNoCell(item.id, 'no-cell'));
+    tr.appendChild(makeDescCell(item));
+    for (let d = 1; d <= DAYS_IN_MONTH; d++) {
+      tr.appendChild(makeDataCell(item.id, d, !HOLIDAY_COLS.includes(d)));
+    }
+    tbody.appendChild(tr);
+  });
+  tbody.appendChild(makeSignRow(
+    'sign_daily',
+    d => TEN_DAY_COLS.includes(d) && !HOLIDAY_COLS.includes(d),
+    '↑機械使用前　点検者サイン（10日毎）'
+  ));
+}
+
+/* ─── 10-DAY TABLE ────────────────────────────────────── */
+function buildTenDayTable() {
+  const PERIODS = [
+    { label: '1日 〜 10日',  inspKey: 'sign_insp_p1', confKey: 'sign_conf_p1' },
+    { label: '11日 〜 20日', inspKey: 'sign_insp_p2', confKey: 'sign_conf_p2' },
+    { label: '21日 〜 30日', inspKey: 'sign_insp_p3', confKey: 'sign_conf_p3' },
+  ];
+  const thead = document.getElementById('tenday-thead');
+  const tbody  = document.getElementById('tenday-tbody');
+  thead.innerHTML = '';
+  tbody.innerHTML = '';
+
+  /* ── header row 1: fixed cols (rowspan=2) + period group headers ── */
+  const tr1 = document.createElement('tr');
+  [
+    { cls:'s0 s-hdr sec-lbl',      st:'background:#E5E7EB;writing-mode:horizontal-tb;font-size:10px;padding:2px 1px;text-align:center;color:#6B7280;' , text:'区分' },
+    { cls:'s-hdr no-cell tencat',  st:'background:#E5E7EB;position:sticky;left:26px;z-index:3;',                                                         text:'分類' },
+    { cls:'s-hdr no-cell',         st:'background:#E5E7EB;font-size:10px;font-weight:800;text-align:center;color:#374151;position:sticky;left:60px;z-index:3;', text:'No' },
+    { cls:'s3 s-hdr desc-cell ten',st:'background:#E5E7EB;font-size:11px;font-weight:800;text-align:center;cursor:default;color:#374151;',                text:'点　検　項　目' },
+  ].forEach(h => {
+    const th = document.createElement('th');
+    th.className = h.cls;
+    th.setAttribute('style', h.st);
+    th.textContent = h.text;
+    th.rowSpan = 2;
+    tr1.appendChild(th);
+  });
+  PERIODS.forEach(p => {
+    const th = document.createElement('th');
+    th.colSpan = 2;
+    th.setAttribute('style', 'background:#DBEAFE;color:#1E40AF;font-size:10px;font-weight:800;text-align:center;border:1px solid #BFDBFE;padding:4px 3px;white-space:nowrap;');
+    th.textContent = p.label;
+    tr1.appendChild(th);
+  });
+  thead.appendChild(tr1);
+
+  /* ── header row 2: 点検者 / 日常点検確認 sub-headers ── */
+  const tr2 = document.createElement('tr');
+  PERIODS.forEach(() => {
+    [{ t:'点検者', w:'66px' }, { t:'日常点検\n確認', w:'66px' }].forEach(col => {
+      const th = document.createElement('th');
+      th.setAttribute('style',
+        'background:#DBEAFE;color:#1E40AF;font-size:8px;font-weight:800;' +
+        'text-align:center;padding:3px 2px;min-width:' + col.w + ';' +
+        'border:1px solid #BFDBFE;white-space:pre-line;line-height:1.5;vertical-align:middle;');
+      th.textContent = col.t;
+      tr2.appendChild(th);
+    });
+  });
+  thead.appendChild(tr2);
+
+  /* ── data rows ── */
+  TEN_DAY_ITEMS.forEach((item, idx) => {
+    const tr = document.createElement('tr');
+
+    /* 区分ラベル (rowspan) */
+    if (idx === 0) {
+      const td = document.createElement('td');
+      td.className = 's0 sec-lbl sec-ten';
+      td.rowSpan = TEN_DAY_ITEMS.length;
+      td.innerHTML = '<span style="text-combine-upright:all">10</span>日毎';
+      tr.appendChild(td);
+    }
+
+    /* 分類 (rowspan per catSpan) */
+    if (item.catSpan > 0) {
+      const td = document.createElement('td');
+      td.className = 'no-cell tencat';
+      td.setAttribute('style', 'position:sticky;left:26px;z-index:2;');
+      td.rowSpan = item.catSpan;
+      td.textContent = item.cat;
+      tr.appendChild(td);
+    }
+
+    /* No */
+    const noTd = document.createElement('td');
+    noTd.className = 'no-cell';
+    noTd.setAttribute('style',
+      'position:sticky;left:60px;z-index:2;background:#F9FAFB;' +
+      'color:#6B7280;font-weight:700;font-size:10px;text-align:center;');
+    noTd.textContent = item.id;
+    tr.appendChild(noTd);
+
+    /* 点検項目 */
+    const descTd = makeDescCell(item, 'ten');
+    descTd.className = descTd.className.replace(/\bs2\b/, 's3');
+    tr.appendChild(descTd);
+
+    /* sign cells – first row only, rowspan covers all items */
+    if (idx === 0) {
+      PERIODS.forEach(p => {
+        [p.inspKey, p.confKey].forEach(key => {
+          const td = document.createElement('td');
+          td.rowSpan = TEN_DAY_ITEMS.length;
+          td.className = 'sign-cell active';
+          td.setAttribute('style',
+            'min-width:66px;font-size:10px;font-weight:700;' +
+            'vertical-align:middle;text-align:center;' +
+            'height:' + (TEN_DAY_ITEMS.length * 48) + 'px;');
+          td.dataset.signkey = key;
+          td.addEventListener('click', onSignTap);
+          td.addEventListener('touchend', function(e) {
+            e.preventDefault(); onSignTap.call(this, e);
+          });
+          tr.appendChild(td);
+        });
+      });
+    }
+    tbody.appendChild(tr);
+  });
+}
+
+/* ─── MONTHLY TABLE ───────────────────────────────────── */
+function buildMonthlyTable() {
+  const thead = document.getElementById('monthly-thead');
+  const tbody = document.getElementById('monthly-tbody');
+  thead.innerHTML = '';
+  tbody.innerHTML = '';
+
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <th class="s0 s-hdr sec-lbl" style="background:#E5E7EB;writing-mode:horizontal-tb;font-size:10px;padding:2px 1px;text-align:center;color:#6B7280;">区分</th>
+    <th class="s1 s-hdr no-cell" style="background:#E5E7EB;font-size:10px;font-weight:800;text-align:center;color:#374151;">No</th>
+    <th class="s2 s-hdr desc-cell mon" style="background:#E5E7EB;font-size:11px;font-weight:800;text-align:center;cursor:default;color:#374151;">点　検　項　目</th>
+    <th style="background:#FEE2E2;color:#991B1B;font-size:8px;font-weight:800;text-align:center;padding:4px;min-width:50px;border:1px solid #E4E7EC;">点検者</th>
+    <th style="background:#FEE2E2;color:#991B1B;font-size:8px;font-weight:800;text-align:center;padding:4px;min-width:60px;border:1px solid #E4E7EC;line-height:1.4;">全点検確認<br>M課責任者</th>
+    <th style="background:#FEF3C7;color:#92400E;font-size:8px;font-weight:800;text-align:center;padding:4px;border:1px solid #E4E7EC;">補　足</th>
+  `;
+  thead.appendChild(tr);
+
+  const SUPPLEMENT = [
+    '点検項目がない場合は ／ を記入する',
+    '異常時は復旧後、改善内容欄に具体的に記入',
+    '毎月（定期）点検は月末に行う',
+    '10日毎に上司確認、最終M課責任者確認後保管',
+  ];
+
+  MONTHLY_ITEMS.forEach((item, idx) => {
+    const tr = document.createElement('tr');
+    if (idx === 0) {
+      const td = document.createElement('td');
+      td.className = 's0 sec-lbl sec-mon';
+      td.rowSpan = MONTHLY_ITEMS.length;
+      td.textContent = '月次点検';
+      tr.appendChild(td);
+    }
+    tr.appendChild(makeNoCell(item.id, 'no-cell mon'));
+    tr.appendChild(makeDescCell(item, 'mon'));
+    if (idx === 0) {
+      ['sign_mon_insp', 'sign_mon_mgr'].forEach(key => {
+        const td = document.createElement('td');
+        td.rowSpan = MONTHLY_ITEMS.length;
+        td.className = 'sign-cell active';
+        td.setAttribute('style', 'min-width:50px;font-size:9px;vertical-align:middle;text-align:center;height:90px;');
+        td.dataset.signkey = key;
+        td.addEventListener('click', onSignTap);
+        td.addEventListener('touchend', function(e) { e.preventDefault(); onSignTap.call(this, e); });
+        tr.appendChild(td);
+      });
+      const notesTd = document.createElement('td');
+      notesTd.rowSpan = MONTHLY_ITEMS.length;
+      notesTd.setAttribute('style', 'background:#FFFBEB;padding:8px 10px;vertical-align:middle;');
+      notesTd.innerHTML = SUPPLEMENT.map(s =>
+        `<p style="font-size:9px;color:#78350F;line-height:1.9;white-space:nowrap;">・${s}</p>`
+      ).join('');
+      tr.appendChild(notesTd);
+    }
+    tbody.appendChild(tr);
+  });
+
+  // Final approval row
+  const finalTr = document.createElement('tr');
+  const finalTd = document.createElement('td');
+  finalTd.colSpan = 3;
+  finalTd.className = 's0 s-hdr final-hdr';
+  finalTd.style.zIndex = 3;
+  finalTd.textContent = '全点検確認　M課責任者';
+  finalTr.appendChild(finalTd);
+  const signFinal = document.createElement('td');
+  signFinal.className = 'final-cell last';
+  signFinal.colSpan = 2;
+  finalTr.appendChild(signFinal);
+  const notesFinal = document.createElement('td');
+  notesFinal.className = 'final-cell';
+  finalTr.appendChild(notesFinal);
+  tbody.appendChild(finalTr);
+}
+
+/* ─── Cell builders ────────────────────────────────── */
+function makeNoCell(id, cls) {
+  const td = document.createElement('td');
+  td.className = 's1 ' + cls;
+  td.textContent = id;
+  return td;
+}
+
+function makeDescCell(item, variant) {
+  const td = document.createElement('td');
+  td.className = 's2 desc-cell' + (variant ? ' ' + variant : '');
+  td.textContent = item.short;
+  td.dataset.id = item.id;
+  td.dataset.expanded = '0';
+  td.addEventListener('click', function() {
+    if (this.dataset.expanded === '1') {
+      this.style.whiteSpace = 'nowrap';
+      this.style.overflow   = 'hidden';
+      this.textContent = item.short;
+      this.dataset.expanded = '0';
+    } else {
+      this.style.whiteSpace = 'pre-line';
+      this.style.overflow   = 'visible';
+      this.style.fontSize   = '10px';
+      this.textContent = item.full;
+      this.dataset.expanded = '1';
+    }
+  });
+  return td;
+}
+
+function makeDataCell(itemId, day, isActive) {
+  const td = document.createElement('td');
+  const isHoliday = HOLIDAY_COLS.includes(day);
+  if (isHoliday) {
+    td.className = 'dcell holiday';
+    td.dataset.item   = itemId;
+    td.dataset.day    = day;
+    td.dataset.active = '0';
+  } else {
+    td.className = 'dcell' + (!isActive ? ' inactive' : day === TODAY ? ' today-col' : '');
+    td.dataset.item   = itemId;
+    td.dataset.day    = day;
+    td.dataset.active = isActive ? '1' : '0';
+    if (isActive) {
+      td.addEventListener('click', onCellTap);
+      td.addEventListener('touchend', function(e) { e.preventDefault(); onCellTap.call(this, e); });
+    }
+  }
+  return td;
+}
+
+function makeSignRow(prefix, isActiveFn, label) {
+  const tr = document.createElement('tr');
+  const hdr = document.createElement('td');
+  hdr.colSpan = 3;
+  hdr.className = 's0 s-hdr sign-hdr';
+  hdr.style.zIndex = 3;
+  hdr.textContent = label;
+  tr.appendChild(hdr);
+  for (let d = 1; d <= DAYS_IN_MONTH; d++) {
+    const td = document.createElement('td');
+    const isHoliday = HOLIDAY_COLS.includes(d);
+    const active = !isHoliday && isActiveFn(d);
+    td.className = 'sign-cell' + (isHoliday ? ' holiday' : active ? ' active' : '');
+    td.dataset.signkey = prefix + '_' + d;
+    if (active) {
+      td.addEventListener('click', onSignTap);
+      td.addEventListener('touchend', function(e) { e.preventDefault(); onSignTap.call(this, e); });
+    }
+    tr.appendChild(td);
+  }
+  return tr;
+}
+
+/* ═══════════════════ STARTUP ════════════════════════ */
+let selectedStartupName = '';
+
+function pickInspector(btn, name) {
+  selectedStartupName = name;
+  document.querySelectorAll('.startup-chip').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById('startup-start').classList.add('ready');
+}
+
+function startApp() {
+  if (!selectedStartupName) return;
+  currentInspector = selectedStartupName;
+  document.getElementById('startup-overlay').style.display = 'none';
+  document.getElementById('header-inspector').style.display = '';
+  document.getElementById('header-inspector-name').textContent = selectedStartupName;
+}
+
+
+function onCellTap(e) {
+  if (!currentInspector) { showWarn(); return; }
+  const itemId = parseInt(this.dataset.item);
+  const day    = parseInt(this.dataset.day);
+  const k      = itemId + '_' + day;
+  const cur    = records[k] ? records[k].status : '';
+  const idx    = STATUS_CYCLE.indexOf(cur);
+  const next   = STATUS_CYCLE[(idx + 1) % STATUS_CYCLE.length];
+  records[k]   = { status: next, inspector: currentInspector };
+  renderCell(this, next);
+}
+
+function onSignTap() {
+  if (!currentInspector) { showWarn(); return; }
+  const key = this.dataset.signkey;
+  if (signRecords[key]) {
+    signRecords[key] = '';
+    this.textContent = '';
+    this.classList.remove('signed');
+  } else {
+    signRecords[key] = currentInspector;
+    this.textContent = currentInspector;
+    this.classList.add('signed');
+  }
+}
+
+function renderCell(td, status) {
+  td.textContent = status;
+  td.classList.remove('ok', 'ng', 'na');
+  if (status === '○') td.classList.add('ok');
+  else if (status === '×') td.classList.add('ng');
+  else if (status === '／') td.classList.add('na');
+}
+
+function showWarn() {
+  const w = document.getElementById('insp-warn');
+  if (!w) return;
+  w.style.display = 'block';
+  w.style.animation = 'none';
+  requestAnimationFrame(() => { w.style.animation = ''; });
+  setTimeout(() => { w.style.display = 'none'; }, 2200);
+}
+
+/* ═══════════════════ MODAL ══════════════════════════ */
+function saveAnomaly() {
+  if (!pendingModal) return;
+  const text = document.getElementById('anomaly-input').value.trim();
+  const rec  = {
+    id: Date.now(),
+    date: '4/' + pendingModal.day,
+    no: pendingModal.itemId,
+    name: pendingModal.itemName,
+    anomaly: text || pendingModal.itemName,
+    improvement: ''
+  };
+  anomalyList.push(rec);
+  renderAnomalyTable();
+  closeModal();
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+  pendingModal = null;
+}
+
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+function renderAnomalyTable() {
+  const tbody = document.getElementById('anomaly-tbody');
+  tbody.innerHTML = '';
+  anomalyList.forEach(rec => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="white-space:nowrap;text-align:center;font-weight:700;color:#374151">${rec.date}</td>
+      <td style="text-align:center;font-weight:700;color:#374151">${rec.no}</td>
+      <td style="color:#374151">${escHtml(rec.anomaly)}</td>
+    `;
+    const impTd = document.createElement('td');
+    impTd.className = 'improve-cell' + (rec.improvement ? ' filled' : '');
+    impTd.textContent = rec.improvement || '（タップで入力）';
+    impTd.addEventListener('click', () => {
+      const val = window.prompt('改善内容を入力してください', rec.improvement);
+      if (val !== null) { rec.improvement = val; renderAnomalyTable(); }
+    });
+    tr.appendChild(impTd);
+    tbody.appendChild(tr);
+  });
+  const rows = Math.max(2, 3 - anomalyList.length);
+  for (let i = 0; i < rows; i++) {
+    const tr = document.createElement('tr');
+    tr.className = 'empty-row';
+    tr.innerHTML = '<td></td><td></td><td></td><td></td>';
+    tbody.appendChild(tr);
+  }
+}
+
+/* ═══════════════════ APPROVAL ═══════════════════════ */
+function toggleApproval(key) {
+  if (!currentInspector && !approvalState[key]) { showWarn(); return; }
+  const btn = document.getElementById('appr-' + key);
+  const statusEl = document.getElementById('appr-' + key + '-status');
+  if (approvalState[key]) {
+    approvalState[key] = null;
+    btn.classList.remove('approved');
+    statusEl.textContent = '未承認';
+  } else {
+    approvalState[key] = currentInspector || '済';
+    btn.classList.add('approved');
+    statusEl.textContent = '✓ ' + approvalState[key];
+  }
+}
+
+/* ═══════════════════ UTILS ══════════════════════════ */
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
+}
+
+/* ═══════════════════ BOOT ═══════════════════════════ */
+buildTable();
+</script>
+</body>
+</html>
