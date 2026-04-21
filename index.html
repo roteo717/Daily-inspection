@@ -151,13 +151,13 @@ table {
   width: 100%;
   min-width: 800px;
 }
-th, td { border: 1px solid #E4E7EC; vertical-align: middle; }
+th, td { border: 1px solid #C8CDD5; vertical-align: middle; }
 
 /* Sticky */
 .s0 { position: sticky; left: 0;    z-index: 2; }
 .s1 { position: sticky; left: 26px; z-index: 2; }
-.s2 { position: sticky; left: 46px; z-index: 2; }
-.s3 { position: sticky; left: 76px; z-index: 2; }
+.s2 { position: sticky; left: 54px; z-index: 2; }
+.s3 { position: sticky; left: 84px; z-index: 2; }
 .s-hdr { z-index: 3 !important; }
 
 /* ─── DAY HEADER ────────────────────────────────── */
@@ -171,6 +171,11 @@ th, td { border: 1px solid #E4E7EC; vertical-align: middle; }
   min-width: 26px;
 }
 .day-hdr.ten  { background: #DBEAFE; color: #1D4ED8; }
+.day-hdr.ten-col { background: #F4F6F8; color: #6B7280; font-weight: 700; }
+.dcell.ten-col { background: #fff; }
+.dcell.ok.ten-col { background: #F0FDF4; }
+.dcell.ng.ten-col { background: #FEF2F2; }
+.sign-cell.ten-col { background: #fff !important; }
 .day-hdr.today{
   background: #FFF3CD;
   color: #B45309;
@@ -198,7 +203,7 @@ th, td { border: 1px solid #E4E7EC; vertical-align: middle; }
 
 /* ─── NO CELL ───────────────────────────────────── */
 .no-cell {
-  width: 20px; min-width: 20px;
+  width: 28px; min-width: 28px;
   text-align: center;
   font-size: 10px; font-weight: 700;
   padding: 2px;
@@ -214,14 +219,17 @@ th, td { border: 1px solid #E4E7EC; vertical-align: middle; }
 
 /* ─── DESC CELL ─────────────────────────────────── */
 .desc-cell {
-  width: 118px; min-width: 118px; max-width: 118px;
+  width: 140px; min-width: 140px; max-width: 140px;
   font-size: 11px;
   padding: 4px 6px; line-height: 1.35;
   cursor: pointer; overflow: hidden;
   background: #FDFDFD; color: #2C3E50;
   white-space: nowrap; text-overflow: ellipsis;
 }
+#monthly-table { border-collapse: collapse; }
+#monthly-table th, #monthly-table td { border: 1.5px solid #B0B8C4; }
 .desc-cell.ten { background: #F0F7FF; }
+#tenday-table .desc-cell { width: 110px; min-width: 110px; max-width: 110px; }
 .desc-cell.mon { background: #FFFBEB; }
 .desc-cell:hover { background: #F0F4FF; }
 
@@ -281,7 +289,7 @@ th, td { border: 1px solid #E4E7EC; vertical-align: middle; }
 /* ─── SIGN ROW ──────────────────────────────────── */
 .sign-hdr {
   font-size: 8px; font-weight: 700;
-  text-align: left; padding: 3px 5px;
+  text-align: center; padding: 3px 5px;
   background: #EFF6FF; color: #1E40AF;
   letter-spacing: 0.01em;
   white-space: normal;
@@ -290,10 +298,11 @@ th, td { border: 1px solid #E4E7EC; vertical-align: middle; }
 }
 .sign-cell {
   text-align: center; font-size: 8px;
-  height: 22px; padding: 0;
+  height: 36px; padding: 0;
   background: #F3F4F6; color: #D1D5DB;
 }
-.sign-cell.active  { background: #DBEAFE; cursor: pointer; color: #6B7280; }
+.sign-cell.active  { background: #fff; cursor: pointer; color: #6B7280; }
+.sign-cell.today-sign { background: #FFFBEB !important; cursor: pointer; }
 .sign-cell.active:active { background: #BFDBFE; }
 .sign-cell.signed  { color: #1D4ED8; font-weight: 700; background: #BFDBFE; }
 
@@ -349,14 +358,14 @@ th, td { border: 1px solid #E4E7EC; vertical-align: middle; }
   font-size: 11px; min-width: 300px;
 }
 #anomaly-tbl th {
-  border: 1px solid #E4E7EC;
+  border: 1px solid #C8CDD5;
   padding: 6px 6px;
   background: #F4F6F8; text-align: center;
   font-size: 10px; font-weight: 800;
   color: #6B7280; letter-spacing: 0.05em;
 }
 #anomaly-tbl td {
-  border: 1px solid #E4E7EC;
+  border: 1px solid #C8CDD5;
   padding: 5px 6px; min-height: 36px; height: 36px;
 }
 .improve-cell {
@@ -551,8 +560,8 @@ th, td { border: 1px solid #E4E7EC; vertical-align: middle; }
     <table id="daily-table">
       <colgroup>
         <col style="width:26px">
-        <col style="width:20px">
-        <col style="width:118px">
+        <col style="width:28px">
+        <col style="width:140px">
       </colgroup>
       <thead id="daily-thead"></thead>
       <tbody id="daily-tbody"></tbody>
@@ -566,9 +575,9 @@ th, td { border: 1px solid #E4E7EC; vertical-align: middle; }
     <table id="tenday-table" style="min-width:unset;width:100%;">
       <colgroup>
         <col style="width:26px">
-        <col style="width:34px">
-        <col style="width:22px">
-        <col style="width:140px">
+        <col style="width:28px">
+        <col style="width:30px">
+        <col style="width:110px">
       </colgroup>
       <thead id="tenday-thead"></thead>
       <tbody id="tenday-tbody"></tbody>
@@ -582,8 +591,8 @@ th, td { border: 1px solid #E4E7EC; vertical-align: middle; }
     <table id="monthly-table">
       <colgroup>
         <col style="width:26px">
-        <col style="width:20px">
-        <col style="width:118px">
+        <col style="width:28px">
+        <col style="width:140px">
         <col style="width:50px">
         <col style="width:60px">
       </colgroup>
@@ -634,26 +643,6 @@ th, td { border: 1px solid #E4E7EC; vertical-align: middle; }
   </div>
 </div>
 
-<!-- ━━ APPROVAL ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-<div class="card">
-  <div class="card-body">
-    <div class="cst"><span class="cst-bar"></span>承認フロー</div>
-    <div class="approval-row">
-      <button class="appr-btn" id="appr-inspector" onclick="toggleApproval('inspector')">
-        <span class="appr-role">点検者確認</span>
-        <span class="appr-status" id="appr-inspector-status">未承認</span>
-      </button>
-      <button class="appr-btn" id="appr-supervisor" onclick="toggleApproval('supervisor')">
-        <span class="appr-role">上司確認</span>
-        <span class="appr-status" id="appr-supervisor-status">未承認</span>
-      </button>
-      <button class="appr-btn" id="appr-manager" onclick="toggleApproval('manager')">
-        <span class="appr-role">M課<br>責任者承認</span>
-        <span class="appr-status" id="appr-manager-status">未承認</span>
-      </button>
-    </div>
-  </div>
-</div>
 
 <!-- ━━ ANOMALY MODAL ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 <div id="modal-overlay">
@@ -733,7 +722,7 @@ function buildDailyTable() {
   for (let d = 1; d <= DAYS_IN_MONTH; d++) {
     const th = document.createElement('th');
     let cls = 'day-hdr';
-    if (TEN_DAY_COLS.includes(d)) cls += ' ten';
+    if (TEN_DAY_COLS.includes(d)) cls += ' ten-col';
     if (HOLIDAY_COLS.includes(d)) cls += ' holiday';
     if (d === TODAY) cls += ' today';
     th.className = cls;
@@ -762,17 +751,17 @@ function buildDailyTable() {
   });
   tbody.appendChild(makeSignRow(
     'sign_daily',
-    d => TEN_DAY_COLS.includes(d) && !HOLIDAY_COLS.includes(d),
-    '↑機械使用前　点検者サイン（10日毎）'
+    d => !HOLIDAY_COLS.includes(d),
+    '↑機械使用前　点検者サイン'
   ));
 }
 
 /* ─── 10-DAY TABLE ────────────────────────────────────── */
 function buildTenDayTable() {
   const PERIODS = [
-    { label: '1日 〜 10日',  inspKey: 'sign_insp_p1', confKey: 'sign_conf_p1' },
-    { label: '11日 〜 20日', inspKey: 'sign_insp_p2', confKey: 'sign_conf_p2' },
-    { label: '21日 〜 30日', inspKey: 'sign_insp_p3', confKey: 'sign_conf_p3' },
+    { start:  1, end: 10, label: '1日 〜 10日',  inspKey: 'sign_insp_p1', confKey: 'sign_conf_p1' },
+    { start: 11, end: 20, label: '11日 〜 20日', inspKey: 'sign_insp_p2', confKey: 'sign_conf_p2' },
+    { start: 21, end: 30, label: '21日 〜 30日', inspKey: 'sign_insp_p3', confKey: 'sign_conf_p3' },
   ];
   const thead = document.getElementById('tenday-thead');
   const tbody  = document.getElementById('tenday-tbody');
@@ -783,8 +772,8 @@ function buildTenDayTable() {
   const tr1 = document.createElement('tr');
   [
     { cls:'s0 s-hdr sec-lbl',      st:'background:#E5E7EB;writing-mode:horizontal-tb;font-size:10px;padding:2px 1px;text-align:center;color:#6B7280;' , text:'区分' },
-    { cls:'s-hdr no-cell tencat',  st:'background:#E5E7EB;position:sticky;left:26px;z-index:3;',                                                         text:'分類' },
-    { cls:'s-hdr no-cell',         st:'background:#E5E7EB;font-size:10px;font-weight:800;text-align:center;color:#374151;position:sticky;left:60px;z-index:3;', text:'No' },
+    { cls:'s-hdr no-cell',         st:'background:#E5E7EB;font-size:10px;font-weight:800;text-align:center;color:#374151;position:sticky;left:26px;z-index:3;', text:'No' },
+    { cls:'s-hdr no-cell tencat',  st:'background:#E5E7EB;position:sticky;left:54px;z-index:3;',                                                         text:'分類' },
     { cls:'s3 s-hdr desc-cell ten',st:'background:#E5E7EB;font-size:11px;font-weight:800;text-align:center;cursor:default;color:#374151;',                text:'点　検　項　目' },
   ].forEach(h => {
     const th = document.createElement('th');
@@ -796,20 +785,20 @@ function buildTenDayTable() {
   });
   PERIODS.forEach(p => {
     const th = document.createElement('th');
-    th.colSpan = 2;
+    th.colSpan = 3;
     th.setAttribute('style', 'background:#DBEAFE;color:#1E40AF;font-size:10px;font-weight:800;text-align:center;border:1px solid #BFDBFE;padding:4px 3px;white-space:nowrap;');
     th.textContent = p.label;
     tr1.appendChild(th);
   });
   thead.appendChild(tr1);
 
-  /* ── header row 2: 点検者 / 日常点検確認 sub-headers ── */
+  /* ── header row 2: 結果入力 + sign sub-headers ── */
   const tr2 = document.createElement('tr');
   PERIODS.forEach(() => {
-    [{ t:'点検者', w:'66px' }, { t:'日常点検\n確認', w:'66px' }].forEach(col => {
+    [{ t:'結果', w:'54px', bg:'#EFF6FF', col:'#1E40AF' }, { t:'点検者', w:'66px', bg:'#DBEAFE', col:'#1E40AF' }, { t:'日常点検\n確認', w:'66px', bg:'#DBEAFE', col:'#1E40AF' }].forEach(col => {
       const th = document.createElement('th');
       th.setAttribute('style',
-        'background:#DBEAFE;color:#1E40AF;font-size:8px;font-weight:800;' +
+        'background:' + col.bg + ';color:' + col.col + ';font-size:8px;font-weight:800;' +
         'text-align:center;padding:3px 2px;min-width:' + col.w + ';' +
         'border:1px solid #BFDBFE;white-space:pre-line;line-height:1.5;vertical-align:middle;');
       th.textContent = col.t;
@@ -831,33 +820,50 @@ function buildTenDayTable() {
       tr.appendChild(td);
     }
 
-    /* 分類 (rowspan per catSpan) */
-    if (item.catSpan > 0) {
-      const td = document.createElement('td');
-      td.className = 'no-cell tencat';
-      td.setAttribute('style', 'position:sticky;left:26px;z-index:2;');
-      td.rowSpan = item.catSpan;
-      td.textContent = item.cat;
-      tr.appendChild(td);
-    }
-
     /* No */
     const noTd = document.createElement('td');
     noTd.className = 'no-cell';
     noTd.setAttribute('style',
-      'position:sticky;left:60px;z-index:2;background:#F9FAFB;' +
+      'position:sticky;left:26px;z-index:2;background:#F9FAFB;' +
       'color:#6B7280;font-weight:700;font-size:10px;text-align:center;');
     noTd.textContent = item.id;
     tr.appendChild(noTd);
+
+    /* 分類 (rowspan per catSpan) */
+    if (item.catSpan > 0) {
+      const td = document.createElement('td');
+      td.className = 'no-cell tencat';
+      td.setAttribute('style', 'position:sticky;left:54px;z-index:2;');
+      td.rowSpan = item.catSpan;
+      td.textContent = item.cat;
+      tr.appendChild(td);
+    }
 
     /* 点検項目 */
     const descTd = makeDescCell(item, 'ten');
     descTd.className = descTd.className.replace(/\bs2\b/, 's3');
     tr.appendChild(descTd);
 
-    /* sign cells – first row only, rowspan covers all items */
-    if (idx === 0) {
-      PERIODS.forEach(p => {
+    /* 入力セル + サインセル (期間ごと) */
+    PERIODS.forEach((p, pi) => {
+      /* 結果入力セル (各行ごと) */
+      const inputTd = document.createElement('td');
+      const inputKey = 'ten_' + item.id + '_p' + (pi + 1);
+      inputTd.className = 'dcell';
+      inputTd.setAttribute('style', 'min-width:54px;');
+      inputTd.dataset.item = inputKey;
+      inputTd.dataset.day  = pi + 1;
+      inputTd.dataset.active = '1';
+      inputTd.addEventListener('click', function() {
+        const cur = records[inputKey] ? records[inputKey].status : '';
+        const idx2 = STATUS_CYCLE.indexOf(cur);
+        const next = STATUS_CYCLE[(idx2 + 1) % STATUS_CYCLE.length];
+        records[inputKey] = { status: next, inspector: currentInspector };
+        renderCell(this, next);
+      });
+      tr.appendChild(inputTd);
+
+      if (idx === 0) {
         [p.inspKey, p.confKey].forEach(key => {
           const td = document.createElement('td');
           td.rowSpan = TEN_DAY_ITEMS.length;
@@ -873,8 +879,8 @@ function buildTenDayTable() {
           });
           tr.appendChild(td);
         });
-      });
-    }
+      }
+    });
     tbody.appendChild(tr);
   });
 }
@@ -937,22 +943,6 @@ function buildMonthlyTable() {
     tbody.appendChild(tr);
   });
 
-  // Final approval row
-  const finalTr = document.createElement('tr');
-  const finalTd = document.createElement('td');
-  finalTd.colSpan = 3;
-  finalTd.className = 's0 s-hdr final-hdr';
-  finalTd.style.zIndex = 3;
-  finalTd.textContent = '全点検確認　M課責任者';
-  finalTr.appendChild(finalTd);
-  const signFinal = document.createElement('td');
-  signFinal.className = 'final-cell last';
-  signFinal.colSpan = 2;
-  finalTr.appendChild(signFinal);
-  const notesFinal = document.createElement('td');
-  notesFinal.className = 'final-cell';
-  finalTr.appendChild(notesFinal);
-  tbody.appendChild(finalTr);
 }
 
 /* ─── Cell builders ────────────────────────────────── */
@@ -995,7 +985,7 @@ function makeDataCell(itemId, day, isActive) {
     td.dataset.day    = day;
     td.dataset.active = '0';
   } else {
-    td.className = 'dcell' + (!isActive ? ' inactive' : day === TODAY ? ' today-col' : '');
+    td.className = 'dcell' + (!isActive ? ' inactive' : TEN_DAY_COLS.includes(day) ? ' ten-col' : day === TODAY ? ' today-col' : '');
     td.dataset.item   = itemId;
     td.dataset.day    = day;
     td.dataset.active = isActive ? '1' : '0';
@@ -1019,7 +1009,9 @@ function makeSignRow(prefix, isActiveFn, label) {
     const td = document.createElement('td');
     const isHoliday = HOLIDAY_COLS.includes(d);
     const active = !isHoliday && isActiveFn(d);
-    td.className = 'sign-cell' + (isHoliday ? ' holiday' : active ? ' active' : '');
+    const isTenCol = TEN_DAY_COLS.includes(d);
+    const isToday = d === TODAY;
+    td.className = 'sign-cell' + (isHoliday ? ' holiday' : isToday ? ' active today-sign' : isTenCol ? ' ten-col' : active ? ' active' : '');
     td.dataset.signkey = prefix + '_' + d;
     if (active) {
       td.addEventListener('click', onSignTap);
