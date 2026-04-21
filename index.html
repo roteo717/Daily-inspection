@@ -154,10 +154,10 @@ table {
 th, td { border: 1px solid #C8CDD5; vertical-align: middle; }
 
 /* Sticky */
-.s0 { position: sticky; left: 0;    z-index: 2; }
-.s1 { position: sticky; left: 26px; z-index: 2; }
-.s2 { position: sticky; left: 54px; z-index: 2; }
-.s3 { position: sticky; left: 84px; z-index: 2; }
+.s0 { position: sticky; left: 0;    z-index: 2; background: #fff; }
+.s1 { position: sticky; left: 26px; z-index: 2; background: #fff; }
+.s2 { position: sticky; left: 54px; z-index: 2; background: #fff; }
+.s3 { position: sticky; left: 84px; z-index: 2; background: #fff; }
 .s-hdr { z-index: 3 !important; }
 
 /* ─── DAY HEADER ────────────────────────────────── */
@@ -759,9 +759,9 @@ function buildDailyTable() {
 /* ─── 10-DAY TABLE ────────────────────────────────────── */
 function buildTenDayTable() {
   const PERIODS = [
-    { start:  1, end: 10, label: '1日 〜 10日',  inspKey: 'sign_insp_p1', confKey: 'sign_conf_p1' },
-    { start: 11, end: 20, label: '11日 〜 20日', inspKey: 'sign_insp_p2', confKey: 'sign_conf_p2' },
-    { start: 21, end: 30, label: '21日 〜 30日', inspKey: 'sign_insp_p3', confKey: 'sign_conf_p3' },
+    { start:  1, end: 10, label: '10日',  inspKey: 'sign_insp_p1', confKey: 'sign_conf_p1' },
+    { start: 11, end: 20, label: '20日', inspKey: 'sign_insp_p2', confKey: 'sign_conf_p2' },
+    { start: 21, end: 30, label: '30日', inspKey: 'sign_insp_p3', confKey: 'sign_conf_p3' },
   ];
   const thead = document.getElementById('tenday-thead');
   const tbody  = document.getElementById('tenday-tbody');
