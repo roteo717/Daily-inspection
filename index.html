@@ -31,14 +31,95 @@ body {
   z-index: 50;
   box-shadow: 0 3px 12px rgba(0,0,0,0.30);
 }
+.app-header-top {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  min-height: 36px;
+}
 .app-header-title {
   font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-align: center;
-  margin-bottom: 8px;
   color: #F1F2F6;
+  flex: 1;
+  padding: 0 110px;
 }
+/* ─── INSPECTOR PILL ────────────────────────────── */
+#header-inspector {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: none;
+  align-items: center;
+  gap: 7px;
+  background: rgba(255,255,255,0.13);
+  border: 1px solid rgba(255,255,255,0.28);
+  border-radius: 999px;
+  padding: 5px 13px 5px 8px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+#header-inspector .insp-avatar {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+#header-inspector .insp-avatar svg {
+  width: 14px; height: 14px;
+  fill: rgba(255,255,255,0.80);
+}
+#header-inspector-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #F1F2F6;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+/* ─── LOGOUT MENU ───────────────────────────────── */
+#logout-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.22);
+  padding: 12px 14px;
+  min-width: 150px;
+  z-index: 100;
+  animation: mUp 0.18s ease;
+}
+#logout-menu.show { display: block; }
+#logout-menu-name {
+  font-size: 11px;
+  color: #9CA3AF;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+#logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 10px;
+  background: #FEF2F2;
+  color: #DC2626;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+#logout-btn:active { background: #FEE2E2; }
 .equip-chips {
   display: flex;
   flex-wrap: wrap;
@@ -55,6 +136,31 @@ body {
   letter-spacing: 0.02em;
 }
 .equip-chip b { color: #F1C40F; font-weight: 700; }
+
+/* ─── EQUIP INFO TABLE ───────────────────────────── */
+.equip-info-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1.5px solid rgba(255,255,255,0.45);
+  table-layout: fixed;
+  min-width: unset;
+}
+.equip-info-table td {
+  border: 1px solid rgba(255,255,255,0.35);
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #F1F2F6;
+  background: rgba(255,255,255,0.07);
+  vertical-align: middle;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.equip-info-table td:first-child { width: 30%; }
+.equip-info-table td:nth-child(2) { width: 45%; }
+.equip-info-table td:last-child { width: 25%; }
+.equip-info-table b { color: #F1C40F; font-weight: 800; }
 
 /* ─── SHARED CARD ───────────────────────────────── */
 .card {
@@ -157,7 +263,7 @@ th, td { border: 1px solid #C8CDD5; vertical-align: middle; }
 .s0 { position: sticky; left: 0;    z-index: 2; background: #fff; }
 .s1 { position: sticky; left: 26px; z-index: 2; background: #fff; }
 .s2 { position: sticky; left: 54px; z-index: 2; background: #fff; }
-.s3 { position: sticky; left: 84px; z-index: 2; background: #fff; }
+.s3 { position: sticky; left: 124px; z-index: 2; background: #fff; }
 .s-hdr { z-index: 3 !important; }
 
 /* ─── DAY HEADER ────────────────────────────────── */
@@ -187,7 +293,7 @@ th, td { border: 1px solid #C8CDD5; vertical-align: middle; }
 
 /* ─── SECTION LABEL ─────────────────────────────── */
 .sec-lbl {
-  width: 26px; min-width: 26px;
+  width: 26px !important; min-width: 26px !important; max-width: 26px !important;
   text-align: center;
   font-size: 9px; font-weight: 800;
   writing-mode: vertical-rl;
@@ -196,6 +302,7 @@ th, td { border: 1px solid #C8CDD5; vertical-align: middle; }
   white-space: nowrap;
   letter-spacing: 0.15em;
   vertical-align: middle;
+  overflow: hidden;
 }
 .sec-daily { background: #D1FAE5; color: #065F46; }
 .sec-ten   { background: #DBEAFE; color: #1E40AF; }
@@ -211,15 +318,15 @@ th, td { border: 1px solid #C8CDD5; vertical-align: middle; }
   color: #6B7280;
 }
 .no-cell.tencat {
-  font-size: 8px; white-space: pre-line;
-  line-height: 1.2; padding: 2px 1px;
-  background: #EFF6FF; color: #1D4ED8;
+  font-size: 8px; white-space: nowrap;
+  line-height: 1.2; padding: 2px 4px;
+  background: #F9FAFB; color: #6B7280;
 }
-.no-cell.mon { background: #FEF3C7; color: #92400E; }
+.no-cell.mon { background: #F9FAFB; color: #6B7280; }
 
 /* ─── DESC CELL ─────────────────────────────────── */
 .desc-cell {
-  width: 140px; min-width: 140px; max-width: 140px;
+  width: 180px; min-width: 180px; max-width: 180px;
   font-size: 11px;
   padding: 4px 6px; line-height: 1.35;
   cursor: pointer; overflow: hidden;
@@ -227,10 +334,10 @@ th, td { border: 1px solid #C8CDD5; vertical-align: middle; }
   white-space: nowrap; text-overflow: ellipsis;
 }
 #monthly-table { border-collapse: collapse; }
-#monthly-table th, #monthly-table td { border: 1.5px solid #B0B8C4; }
-.desc-cell.ten { background: #F0F7FF; }
+#monthly-table th, #monthly-table td { border: 1.5px solid #B0B8C4 !important; }
+.desc-cell.ten { background: #FDFDFD; }
 #tenday-table .desc-cell { width: 110px; min-width: 110px; max-width: 110px; }
-.desc-cell.mon { background: #FFFBEB; }
+.desc-cell.mon { background: #FDFDFD; width: 180px; min-width: 180px; max-width: 180px; }
 .desc-cell:hover { background: #F0F4FF; }
 
 /* ─── DATA CELLS ────────────────────────────────── */
@@ -298,11 +405,46 @@ th, td { border: 1px solid #C8CDD5; vertical-align: middle; }
   text-align: center; font-size: 8px;
   height: 36px; padding: 0;
   background: #F3F4F6; color: #D1D5DB;
+  overflow: hidden;
 }
 .sign-cell.active  { background: #fff; cursor: pointer; color: #6B7280; }
 .sign-cell.today-sign { background: #FFFBEB !important; cursor: pointer; }
 .sign-cell.active:active { background: #BFDBFE; }
-.sign-cell.signed  { color: #1D4ED8; font-weight: 700; background: #BFDBFE; }
+.sign-cell.signed  { background: #fff; }
+/* ─── HANKO STAMP ───────────────────────────────── */
+.hanko {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 2px solid #C0392B;
+  color: #C0392B;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  line-height: 1.15;
+  text-align: center;
+  white-space: pre-line;
+  word-break: break-all;
+  background: rgba(192,57,43,0.04);
+  box-shadow: 0 0 0 1px rgba(192,57,43,0.12);
+  transform: rotate(-8deg);
+  opacity: 0.88;
+  animation: stampIn 0.18s cubic-bezier(0.2,0.8,0.4,1.2);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+@keyframes stampIn {
+  0%   { transform: rotate(-8deg) scale(1.6); opacity: 0; }
+  60%  { transform: rotate(-8deg) scale(0.92); opacity: 1; }
+  100% { transform: rotate(-8deg) scale(1); opacity: 0.88; }
+}
+@keyframes stampIn {
+  0%   { transform: rotate(-8deg) scale(1.6); opacity: 0; }
+  60%  { transform: rotate(-8deg) scale(0.92); opacity: 1; }
+  100% { transform: rotate(-8deg) scale(1); opacity: 0.88; }
+}
 
 /* ─── FINAL ROW ─────────────────────────────────── */
 .final-hdr {
@@ -503,8 +645,9 @@ th, td { border: 1px solid #C8CDD5; vertical-align: middle; }
 }
 .startup-chip:active { transform: scale(0.93); }
 .startup-chip.selected {
-  border-color: #2C3E50;
-  background: #2C3E50; color: #fff;
+  border-color: #2C3E50 !important;
+  background: #ffffff !important;
+  color: #2C3E50 !important;
   box-shadow: 0 2px 8px rgba(44,62,80,0.3);
 }
 #startup-start {
@@ -526,14 +669,32 @@ th, td { border: 1px solid #C8CDD5; vertical-align: middle; }
 
 <!-- ━━ HEADER ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 <div class="app-header">
-  <div class="app-header-title">日常・定期点検表　（2026年　4月度）</div>
-  <div class="equip-chips">
-    <div class="equip-chip">設備No. <b>2-A41-048</b></div>
-    <div class="equip-chip">設備名 <b>NC旋盤</b></div>
-    <div class="equip-chip">型式 <b>日立 TS15</b></div>
-    <div class="equip-chip">管理部門 <b>M課</b></div>
-    <div class="equip-chip" id="header-inspector" style="display:none;background:rgba(39,174,96,0.25);border-color:rgba(39,174,96,0.5)">点検者 <b id="header-inspector-name"></b></div>
+  <div class="app-header-top">
+    <div class="app-header-title">日常・定期点検表　（2026年　4月度）</div>
+    <div id="header-inspector" onclick="toggleLogoutMenu()">
+      <div class="insp-avatar">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+        </svg>
+      </div>
+      <b id="header-inspector-name"></b>
+    </div>
+    <!-- ログアウトメニュー -->
+    <div id="logout-menu">
+      <div id="logout-menu-name"></div>
+      <button id="logout-btn" onclick="doLogout()">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="flex-shrink:0"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zm-15 2h2V5h10V3H4C2.9 3 2 3.9 2 5v14c0 1.1.9 2 2 2h10v-2H4V9z"/></svg>
+        ログアウト
+      </button>
+    </div>
   </div>
+  <table class="equip-info-table">
+    <tr>
+      <td>設備No.　<b>2-A41-048</b></td>
+      <td>設備名：NC旋盤　　型式：日立 TS15</td>
+      <td>管理担当部門：M課</td>
+    </tr>
+  </table>
 </div>
 
 <!-- ━━ STARTUP MODAL ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
@@ -557,9 +718,9 @@ th, td { border: 1px solid #C8CDD5; vertical-align: middle; }
   <div class="table-scroll-wrap">
     <table id="daily-table">
       <colgroup>
-        <col style="width:26px">
-        <col style="width:28px">
-        <col style="width:140px">
+        <col style="width:26px;min-width:26px;max-width:26px;">
+        <col style="width:28px;min-width:28px;">
+        <col style="width:180px;min-width:180px;">
       </colgroup>
       <thead id="daily-thead"></thead>
       <tbody id="daily-tbody"></tbody>
@@ -572,10 +733,13 @@ th, td { border: 1px solid #C8CDD5; vertical-align: middle; }
   <div class="table-scroll-wrap">
     <table id="tenday-table" style="min-width:unset;width:100%;">
       <colgroup>
-        <col style="width:26px">
-        <col style="width:28px">
-        <col style="width:30px">
-        <col style="width:110px">
+        <col style="width:26px;min-width:26px;max-width:26px;">
+        <col style="width:28px;min-width:28px;">
+        <col style="width:70px;min-width:70px;">
+        <col style="width:110px;min-width:110px;">
+        <col style="width:54px"><col style="width:66px"><col style="width:66px">
+        <col style="width:54px"><col style="width:66px"><col style="width:66px">
+        <col style="width:54px"><col style="width:66px"><col style="width:66px">
       </colgroup>
       <thead id="tenday-thead"></thead>
       <tbody id="tenday-tbody"></tbody>
@@ -586,35 +750,20 @@ th, td { border: 1px solid #C8CDD5; vertical-align: middle; }
 <!-- ━━ MONTHLY TABLE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 <div class="card">
   <div class="table-scroll-wrap">
-    <table id="monthly-table">
+    <table id="monthly-table" style="min-width:unset;width:100%;table-layout:fixed;">
       <colgroup>
-        <col style="width:26px">
-        <col style="width:28px">
-        <col style="width:140px">
-        <col style="width:50px">
-        <col style="width:60px">
+        <col style="width:26px;min-width:26px;max-width:26px;">
+        <col style="width:28px;min-width:28px;">
+        <col style="width:180px;min-width:180px;">
+        <col style="width:54px;">
+        <col style="width:66px;">
+        <col style="width:66px;">
+        <col>
       </colgroup>
       <thead id="monthly-thead"></thead>
       <tbody id="monthly-tbody"></tbody>
     </table>
   </div>
-</div>
-
-<!-- ━━ LEGEND ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-<div class="card">
-  <div class="legend-wrap">
-    <div class="legend-item"><div class="l-badge l-ok">○</div><span>正常</span></div>
-    <div class="legend-item"><div class="l-badge l-ng">×</div><span>異常</span></div>
-    <div class="legend-item"><div class="l-badge l-na">／</div><span>対象外</span></div>
-    <span class="legend-hint">タップで切替</span>
-  </div>
-</div>
-
-<!-- ━━ NOTES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-<div class="notes-card">
-  <p>点検項目がない場合は ／ を記入する</p>
-  <p>異常時は下記記録欄に記入し、復旧後は改善内容欄に具体的に記入</p>
-  <p>毎月（定期）点検は月末に行う。10日毎に上司確認、最終M課責任者が確認し保管</p>
 </div>
 
 <!-- ━━ ANOMALY RECORDS ━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
@@ -674,9 +823,9 @@ const DAILY_ITEMS = [
 const TEN_DAY_ITEMS = [
   { id:5, cat:'制御盤',       catSpan:2, short:'制御盤フィルター清掃',      full:'制御盤フィルター（メッシュタイプ）清掃（エアブロー）' },
   { id:6, cat:'制御盤',       catSpan:0, short:'外部ファン清掃・回転確認',  full:'制御盤外部ファン、フィンの清掃（エアブロー）、回転確認' },
-  { id:7, cat:'油圧\nユニット', catSpan:2, short:'油圧ポンプ清掃・回転確認', full:'油圧ポンプラジエター、ファン清掃（エアブロー）、回転確認' },
-  { id:8, cat:'油圧\nユニット', catSpan:0, short:'作動油量確認',            full:'油圧ユニット作動油量が規定以上ある事' },
-  { id:9, cat:'オイル\nクーラー', catSpan:1, short:'クーラーフィルタ清掃',  full:'クーラーフィルタの清掃（エアーブロー）' },
+  { id:7, cat:'油圧ユニット', catSpan:2, short:'油圧ポンプ清掃・回転確認', full:'油圧ポンプラジエター、ファン清掃（エアブロー）、回転確認' },
+  { id:8, cat:'油圧ユニット', catSpan:0, short:'作動油量確認',            full:'油圧ユニット作動油量が規定以上ある事' },
+  { id:9, cat:'オイルクーラー', catSpan:1, short:'クーラーフィルタ清掃',  full:'クーラーフィルタの清掃（エアーブロー）' },
 ];
 const MONTHLY_ITEMS = [
   { id:10, short:'制御盤フィルタ交換',         full:'制御盤フィルタ交換（ファイバー）→交換日をフィルタへ記入' },
@@ -737,6 +886,7 @@ function buildDailyTable() {
       const td = document.createElement('td');
       td.className = 's0 sec-lbl sec-daily';
       td.rowSpan = DAILY_ITEMS.length;
+      td.setAttribute('style', 'width:26px;min-width:26px;max-width:26px;');
       td.textContent = '日常点検';
       tr.appendChild(td);
     }
@@ -771,14 +921,14 @@ function buildTenDayTable() {
   [
     { cls:'s0 s-hdr sec-lbl',      st:'background:#E5E7EB;writing-mode:horizontal-tb;font-size:10px;padding:2px 1px;text-align:center;color:#6B7280;' , text:'区分' },
     { cls:'s-hdr no-cell',         st:'background:#E5E7EB;font-size:10px;font-weight:800;text-align:center;color:#374151;position:sticky;left:26px;z-index:3;', text:'No' },
-    { cls:'s-hdr no-cell tencat',  st:'background:#E5E7EB;position:sticky;left:54px;z-index:3;',                                                         text:'分類' },
+    { cls:'s-hdr no-cell tencat',  st:'background:#E5E7EB;color:#374151;font-size:10px;font-weight:800;text-align:center;position:sticky;left:54px;z-index:3;min-width:70px;',                                                         text:'分類' },
     { cls:'s3 s-hdr desc-cell ten',st:'background:#E5E7EB;font-size:11px;font-weight:800;text-align:center;cursor:default;color:#374151;',                text:'点　検　項　目' },
   ].forEach(h => {
     const th = document.createElement('th');
     th.className = h.cls;
     th.setAttribute('style', h.st);
     th.textContent = h.text;
-    th.rowSpan = 2;
+    th.rowSpan = 1;
     tr1.appendChild(th);
   });
   PERIODS.forEach(p => {
@@ -790,14 +940,24 @@ function buildTenDayTable() {
   });
   thead.appendChild(tr1);
 
-  /* ── header row 2: 結果入力 + sign sub-headers ── */
+  /* ── header row 2: fixed col placeholders + 結果入力 + sign sub-headers ── */
   const tr2 = document.createElement('tr');
+  [
+    { w:'26px',  st:'position:sticky;left:0;z-index:3;background:#E5E7EB;' },
+    { w:'28px',  st:'position:sticky;left:26px;z-index:3;background:#E5E7EB;' },
+    { w:'70px',  st:'position:sticky;left:54px;z-index:3;background:#E5E7EB;' },
+    { w:'110px', st:'position:sticky;left:124px;z-index:3;background:#E5E7EB;' },
+  ].forEach(({w, st}) => {
+    const th = document.createElement('th');
+    th.setAttribute('style', st + 'min-width:' + w + ';width:' + w + ';padding:0;border:1px solid #C8CDD5;');
+    tr2.appendChild(th);
+  });
   PERIODS.forEach(() => {
     [{ t:'結果', w:'54px', bg:'#EFF6FF', col:'#1E40AF' }, { t:'点検者', w:'66px', bg:'#DBEAFE', col:'#1E40AF' }, { t:'日常点検\n確認', w:'66px', bg:'#DBEAFE', col:'#1E40AF' }].forEach(col => {
       const th = document.createElement('th');
       th.setAttribute('style',
         'background:' + col.bg + ';color:' + col.col + ';font-size:8px;font-weight:800;' +
-        'text-align:center;padding:3px 2px;min-width:' + col.w + ';' +
+        'text-align:center;padding:3px 2px;width:' + col.w + ';min-width:' + col.w + ';' +
         'border:1px solid #BFDBFE;white-space:pre-line;line-height:1.5;vertical-align:middle;');
       th.textContent = col.t;
       tr2.appendChild(th);
@@ -814,6 +974,7 @@ function buildTenDayTable() {
       const td = document.createElement('td');
       td.className = 's0 sec-lbl sec-ten';
       td.rowSpan = TEN_DAY_ITEMS.length;
+      td.setAttribute('style', 'width:26px;min-width:26px;max-width:26px;');
       td.innerHTML = '<span style="text-combine-upright:all">10</span>日毎';
       tr.appendChild(td);
     }
@@ -895,8 +1056,9 @@ function buildMonthlyTable() {
     <th class="s0 s-hdr sec-lbl" style="background:#E5E7EB;writing-mode:horizontal-tb;font-size:10px;padding:2px 1px;text-align:center;color:#6B7280;">区分</th>
     <th class="s1 s-hdr no-cell" style="background:#E5E7EB;font-size:10px;font-weight:800;text-align:center;color:#374151;">No</th>
     <th class="s2 s-hdr desc-cell mon" style="background:#E5E7EB;font-size:11px;font-weight:800;text-align:center;cursor:default;color:#374151;">点　検　項　目</th>
-    <th style="background:#FEE2E2;color:#991B1B;font-size:8px;font-weight:800;text-align:center;padding:4px;min-width:50px;border:1px solid #E4E7EC;">点検者</th>
-    <th style="background:#FEE2E2;color:#991B1B;font-size:8px;font-weight:800;text-align:center;padding:4px;min-width:60px;border:1px solid #E4E7EC;line-height:1.4;">全点検確認<br>M課責任者</th>
+    <th style="background:#E5E7EB;color:#374151;font-size:8px;font-weight:800;text-align:center;padding:4px;width:54px;min-width:54px;border:1px solid #C8CDD5;">結　果</th>
+    <th style="background:#FEE2E2;color:#991B1B;font-size:8px;font-weight:800;text-align:center;padding:4px;width:66px;min-width:66px;border:1px solid #E4E7EC;">点検者</th>
+    <th style="background:#FEE2E2;color:#991B1B;font-size:8px;font-weight:800;text-align:center;padding:4px;width:66px;min-width:66px;border:1px solid #E4E7EC;line-height:1.4;">全点検確認<br>M課責任者</th>
     <th style="background:#FEF3C7;color:#92400E;font-size:8px;font-weight:800;text-align:center;padding:4px;border:1px solid #E4E7EC;">補　足</th>
   `;
   thead.appendChild(tr);
@@ -914,17 +1076,37 @@ function buildMonthlyTable() {
       const td = document.createElement('td');
       td.className = 's0 sec-lbl sec-mon';
       td.rowSpan = MONTHLY_ITEMS.length;
+      td.setAttribute('style', 'width:26px;min-width:26px;max-width:26px;');
       td.textContent = '月次点検';
       tr.appendChild(td);
     }
     tr.appendChild(makeNoCell(item.id, 'no-cell mon'));
     tr.appendChild(makeDescCell(item, 'mon'));
+
+    /* 結果入力セル */
+    const resultTd = document.createElement('td');
+    const resultKey = 'mon_' + item.id;
+    resultTd.className = 'dcell';
+    resultTd.setAttribute('style', 'min-width:54px;border:1.5px solid #B0B8C4;');
+    resultTd.dataset.item = resultKey;
+    resultTd.dataset.day  = 0;
+    resultTd.dataset.active = '1';
+    resultTd.addEventListener('click', function() {
+      if (!currentInspector) { showWarn(); return; }
+      const cur  = records[resultKey] ? records[resultKey].status : '';
+      const idx2 = STATUS_CYCLE.indexOf(cur);
+      const next = STATUS_CYCLE[(idx2 + 1) % STATUS_CYCLE.length];
+      records[resultKey] = { status: next, inspector: currentInspector };
+      renderCell(this, next);
+      saveData();
+    });
+    tr.appendChild(resultTd);
     if (idx === 0) {
       ['sign_mon_insp', 'sign_mon_mgr'].forEach(key => {
         const td = document.createElement('td');
         td.rowSpan = MONTHLY_ITEMS.length;
         td.className = 'sign-cell active';
-        td.setAttribute('style', 'min-width:50px;font-size:9px;vertical-align:middle;text-align:center;height:90px;');
+        td.setAttribute('style', 'min-width:50px;font-size:9px;vertical-align:middle;text-align:center;height:' + (MONTHLY_ITEMS.length * 48) + 'px;border:1.5px solid #B0B8C4;');
         td.dataset.signkey = key;
         td.addEventListener('click', onSignTap);
         td.addEventListener('touchend', function(e) { e.preventDefault(); onSignTap.call(this, e); });
@@ -932,10 +1114,16 @@ function buildMonthlyTable() {
       });
       const notesTd = document.createElement('td');
       notesTd.rowSpan = MONTHLY_ITEMS.length;
-      notesTd.setAttribute('style', 'background:#FFFBEB;padding:8px 10px;vertical-align:middle;');
+      notesTd.setAttribute('style', 'background:#FFFBEB;padding:8px 10px;vertical-align:middle;width:160px;border:1.5px solid #B0B8C4;height:' + (MONTHLY_ITEMS.length * 48) + 'px;');
       notesTd.innerHTML = SUPPLEMENT.map(s =>
-        `<p style="font-size:9px;color:#78350F;line-height:1.9;white-space:nowrap;">・${s}</p>`
-      ).join('');
+        `<p style="font-size:9px;color:#78350F;line-height:1.9;white-space:normal;word-break:keep-all;">・${s}</p>`
+      ).join('') + `
+        <div style="margin-top:8px;padding-top:6px;border-top:1px solid #F0E0A0;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <span style="display:inline-flex;align-items:center;gap:3px;font-size:9px;color:#374151;"><span style="width:18px;height:18px;border-radius:4px;background:#F0FDF4;color:#16A34A;font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;">○</span>正常</span>
+          <span style="display:inline-flex;align-items:center;gap:3px;font-size:9px;color:#374151;"><span style="width:18px;height:18px;border-radius:4px;background:#FEF2F2;color:#DC2626;font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;">×</span>異常</span>
+          <span style="display:inline-flex;align-items:center;gap:3px;font-size:9px;color:#374151;"><span style="width:18px;height:18px;border-radius:4px;background:#F9FAFB;color:#9CA3AF;font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;">／</span>対象外</span>
+        </div>
+      `;
       tr.appendChild(notesTd);
     }
     tbody.appendChild(tr);
@@ -1021,6 +1209,32 @@ function makeSignRow(prefix, isActiveFn, label) {
 }
 
 /* ═══════════════════ STARTUP ════════════════════════ */
+function toggleLogoutMenu() {
+  const menu = document.getElementById('logout-menu');
+  menu.classList.toggle('show');
+}
+
+function doLogout() {
+  currentInspector = '';
+  document.getElementById('header-inspector').style.display = 'none';
+  document.getElementById('logout-menu').classList.remove('show');
+  document.getElementById('header-inspector-name').textContent = '';
+  selectedStartupName = '';
+  document.querySelectorAll('.startup-chip').forEach(b => b.classList.remove('selected'));
+  document.getElementById('startup-start').classList.remove('ready');
+  document.getElementById('startup-overlay').style.display = 'flex';
+  saveData();
+}
+
+// メニュー外タップで閉じる
+document.addEventListener('click', function(e) {
+  const menu = document.getElementById('logout-menu');
+  const pill = document.getElementById('header-inspector');
+  if (menu && menu.classList.contains('show') && !pill.contains(e.target)) {
+    menu.classList.remove('show');
+  }
+});
+
 let selectedStartupName = '';
 
 function pickInspector(btn, name) {
@@ -1034,8 +1248,11 @@ function startApp() {
   if (!selectedStartupName) return;
   currentInspector = selectedStartupName;
   document.getElementById('startup-overlay').style.display = 'none';
-  document.getElementById('header-inspector').style.display = '';
+  const pill = document.getElementById('header-inspector');
+  pill.style.display = 'flex';
   document.getElementById('header-inspector-name').textContent = selectedStartupName;
+  document.getElementById('logout-menu-name').textContent = selectedStartupName;
+  saveData();
 }
 
 
@@ -1049,6 +1266,7 @@ function onCellTap(e) {
   const next   = STATUS_CYCLE[(idx + 1) % STATUS_CYCLE.length];
   records[k]   = { status: next, inspector: currentInspector };
   renderCell(this, next);
+  saveData();
 }
 
 function onSignTap() {
@@ -1056,13 +1274,16 @@ function onSignTap() {
   const key = this.dataset.signkey;
   if (signRecords[key]) {
     signRecords[key] = '';
-    this.textContent = '';
+    this.innerHTML = '';
     this.classList.remove('signed');
   } else {
     signRecords[key] = currentInspector;
-    this.textContent = currentInspector;
+    const name = currentInspector;
+    const lines = name.length <= 2 ? name : name.slice(0,2) + '\n' + name.slice(2);
+    this.innerHTML = `<span class="hanko">${escHtml(lines)}</span>`;
     this.classList.add('signed');
   }
+  saveData();
 }
 
 function renderCell(td, status) {
@@ -1096,6 +1317,7 @@ function saveAnomaly() {
   };
   anomalyList.push(rec);
   renderAnomalyTable();
+  saveData();
   closeModal();
 }
 
@@ -1123,7 +1345,7 @@ function renderAnomalyTable() {
     impTd.textContent = rec.improvement || '（タップで入力）';
     impTd.addEventListener('click', () => {
       const val = window.prompt('改善内容を入力してください', rec.improvement);
-      if (val !== null) { rec.improvement = val; renderAnomalyTable(); }
+      if (val !== null) { rec.improvement = val; renderAnomalyTable(); saveData(); }
     });
     tr.appendChild(impTd);
     tbody.appendChild(tr);
@@ -1151,6 +1373,7 @@ function toggleApproval(key) {
     btn.classList.add('approved');
     statusEl.textContent = '✓ ' + approvalState[key];
   }
+  saveData();
 }
 
 /* ═══════════════════ UTILS ══════════════════════════ */
@@ -1161,8 +1384,91 @@ function escHtml(s) {
     .replace(/>/g,'&gt;');
 }
 
+/* ═══════════════════ STORAGE ════════════════════════ */
+const STORAGE_KEY = 'inspection_2026_04';
+
+function saveData() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      records, signRecords, anomalyList, approvalState, currentInspector
+    }));
+  } catch(e) {}
+}
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    if (d.records)       records       = d.records;
+    if (d.signRecords)   signRecords   = d.signRecords;
+    if (d.anomalyList)   anomalyList   = d.anomalyList;
+    if (d.approvalState) approvalState = d.approvalState;
+    if (d.currentInspector) currentInspector = d.currentInspector;
+  } catch(e) {}
+}
+
+function restoreUI() {
+  /* セルの○×を復元 */
+  document.querySelectorAll('.dcell[data-active="1"]').forEach(td => {
+    const k = td.dataset.item + '_' + td.dataset.day;
+    const rec = records[k];
+    if (rec && rec.status) renderCell(td, rec.status);
+  });
+  /* 10日毎の入力セルを復元 */
+  document.querySelectorAll('.dcell[data-item^="ten_"]').forEach(td => {
+    const k = td.dataset.item;
+    const rec = records[k];
+    if (rec && rec.status) renderCell(td, rec.status);
+  });
+  /* 月次の入力セルを復元 */
+  document.querySelectorAll('.dcell[data-item^="mon_"]').forEach(td => {
+    const k = td.dataset.item;
+    const rec = records[k];
+    if (rec && rec.status) renderCell(td, rec.status);
+  });
+  /* サインセルを復元 */
+  document.querySelectorAll('.sign-cell[data-signkey]').forEach(td => {
+    const key = td.dataset.signkey;
+    const name = signRecords[key];
+    if (name) {
+      const lines = name.length <= 2 ? name : name.slice(0,2) + '\n' + name.slice(2);
+      td.innerHTML = `<span class="hanko" style="animation:none">${escHtml(lines)}</span>`;
+      td.classList.add('signed');
+    }
+  });
+  /* 承認ボタンを復元 */
+  ['inspector','supervisor','manager'].forEach(key => {
+    if (approvalState[key]) {
+      const btn = document.getElementById('appr-' + key);
+      const statusEl = document.getElementById('appr-' + key + '-status');
+      if (btn) { btn.classList.add('approved'); statusEl.textContent = '✓ ' + approvalState[key]; }
+    }
+  });
+  /* 異常記録テーブルを復元 */
+  if (anomalyList.length) renderAnomalyTable();
+  /* 点検者が保存されていたらスタートオーバーレイをスキップ */
+  if (currentInspector) {
+    document.getElementById('startup-overlay').style.display = 'none';
+    const pill = document.getElementById('header-inspector');
+    pill.style.display = 'flex';
+    document.getElementById('header-inspector-name').textContent = currentInspector;
+    document.getElementById('logout-menu-name').textContent = currentInspector;
+  }
+}
+
+/* 変更のたびに自動保存 */
+function patchSave() {
+  const origOnCellTap   = onCellTap;
+  const origOnSignTap   = onSignTap;
+  // onCellTap / onSignTap はすでに定義済みなので、
+  // addEventListener の呼び出し元でなく saveData() を末尾に挿入する形で対処
+}
+
 /* ═══════════════════ BOOT ═══════════════════════════ */
 buildTable();
+loadData();
+restoreUI();
 </script>
 </body>
 </html>
