@@ -270,7 +270,7 @@ th, td { border: 1px solid #C8CDD5; vertical-align: middle; }
 .day-hdr {
   text-align: center;
   font-size: 10px;
-  padding: 4px 0;
+  padding: 8px 0;
   background: #F4F6F8;
   font-weight: 700;
   color: #6B7280;
@@ -718,9 +718,9 @@ th, td { border: 1px solid #C8CDD5; vertical-align: middle; }
   <div class="table-scroll-wrap">
     <table id="daily-table">
       <colgroup>
-        <col style="width:26px;min-width:26px;max-width:26px;">
-        <col style="width:28px;min-width:28px;">
-        <col style="width:180px;min-width:180px;">
+        <col style="width:26px">
+        <col style="width:28px">
+        <col style="width:180px">
       </colgroup>
       <thead id="daily-thead"></thead>
       <tbody id="daily-tbody"></tbody>
@@ -733,13 +733,10 @@ th, td { border: 1px solid #C8CDD5; vertical-align: middle; }
   <div class="table-scroll-wrap">
     <table id="tenday-table" style="min-width:unset;width:100%;">
       <colgroup>
-        <col style="width:26px;min-width:26px;max-width:26px;">
-        <col style="width:28px;min-width:28px;">
-        <col style="width:70px;min-width:70px;">
-        <col style="width:110px;min-width:110px;">
-        <col style="width:54px"><col style="width:66px"><col style="width:66px">
-        <col style="width:54px"><col style="width:66px"><col style="width:66px">
-        <col style="width:54px"><col style="width:66px"><col style="width:66px">
+        <col style="width:26px">
+        <col style="width:28px">
+        <col style="width:70px">
+        <col style="width:110px">
       </colgroup>
       <thead id="tenday-thead"></thead>
       <tbody id="tenday-tbody"></tbody>
@@ -750,14 +747,14 @@ th, td { border: 1px solid #C8CDD5; vertical-align: middle; }
 <!-- ━━ MONTHLY TABLE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 <div class="card">
   <div class="table-scroll-wrap">
-    <table id="monthly-table" style="min-width:unset;width:100%;table-layout:fixed;">
+    <table id="monthly-table" style="min-width:528px;width:100%;table-layout:fixed;">
       <colgroup>
         <col style="width:26px;min-width:26px;max-width:26px;">
         <col style="width:28px;min-width:28px;">
         <col style="width:180px;min-width:180px;">
-        <col style="width:54px;">
-        <col style="width:66px;">
-        <col style="width:66px;">
+        <col style="width:240px;min-width:240px;">
+        <col style="width:200px;min-width:200px;">
+        <col style="width:200px;min-width:200px;">
         <col>
       </colgroup>
       <thead id="monthly-thead"></thead>
@@ -862,9 +859,9 @@ function buildDailyTable() {
   thead.innerHTML = '';
   const tr = document.createElement('tr');
   tr.innerHTML = `
-    <th class="s0 s-hdr sec-lbl" style="background:#E5E7EB;writing-mode:horizontal-tb;font-size:10px;padding:2px 1px;text-align:center;color:#6B7280;">区分</th>
-    <th class="s1 s-hdr no-cell" style="background:#E5E7EB;font-size:10px;font-weight:800;text-align:center;color:#374151;">No</th>
-    <th class="s2 s-hdr desc-cell" style="background:#E5E7EB;font-size:11px;font-weight:800;text-align:center;cursor:default;color:#374151;">点　検　項　目</th>
+    <th class="s0 s-hdr sec-lbl" style="background:#E5E7EB;writing-mode:horizontal-tb;font-size:10px;padding:8px 1px;text-align:center;color:#6B7280;">区分</th>
+    <th class="s1 s-hdr no-cell" style="background:#E5E7EB;font-size:10px;font-weight:800;text-align:center;color:#374151;padding:8px 2px;">No</th>
+    <th class="s2 s-hdr desc-cell" style="background:#E5E7EB;font-size:11px;font-weight:800;text-align:center;cursor:default;color:#374151;padding:8px 6px;">点　検　項　目</th>
   `;
   for (let d = 1; d <= DAYS_IN_MONTH; d++) {
     const th = document.createElement('th');
@@ -886,7 +883,6 @@ function buildDailyTable() {
       const td = document.createElement('td');
       td.className = 's0 sec-lbl sec-daily';
       td.rowSpan = DAILY_ITEMS.length;
-      td.setAttribute('style', 'width:26px;min-width:26px;max-width:26px;');
       td.textContent = '日常点検';
       tr.appendChild(td);
     }
@@ -928,7 +924,7 @@ function buildTenDayTable() {
     th.className = h.cls;
     th.setAttribute('style', h.st);
     th.textContent = h.text;
-    th.rowSpan = 1;
+    th.rowSpan = 2;
     tr1.appendChild(th);
   });
   PERIODS.forEach(p => {
@@ -940,18 +936,8 @@ function buildTenDayTable() {
   });
   thead.appendChild(tr1);
 
-  /* ── header row 2: fixed col placeholders + 結果入力 + sign sub-headers ── */
+  /* ── header row 2: 結果入力 + sign sub-headers ── */
   const tr2 = document.createElement('tr');
-  [
-    { w:'26px',  st:'position:sticky;left:0;z-index:3;background:#E5E7EB;' },
-    { w:'28px',  st:'position:sticky;left:26px;z-index:3;background:#E5E7EB;' },
-    { w:'70px',  st:'position:sticky;left:54px;z-index:3;background:#E5E7EB;' },
-    { w:'110px', st:'position:sticky;left:124px;z-index:3;background:#E5E7EB;' },
-  ].forEach(({w, st}) => {
-    const th = document.createElement('th');
-    th.setAttribute('style', st + 'min-width:' + w + ';width:' + w + ';padding:0;border:1px solid #C8CDD5;');
-    tr2.appendChild(th);
-  });
   PERIODS.forEach(() => {
     [{ t:'結果', w:'54px', bg:'#EFF6FF', col:'#1E40AF' }, { t:'点検者', w:'66px', bg:'#DBEAFE', col:'#1E40AF' }, { t:'日常点検\n確認', w:'66px', bg:'#DBEAFE', col:'#1E40AF' }].forEach(col => {
       const th = document.createElement('th');
@@ -974,7 +960,6 @@ function buildTenDayTable() {
       const td = document.createElement('td');
       td.className = 's0 sec-lbl sec-ten';
       td.rowSpan = TEN_DAY_ITEMS.length;
-      td.setAttribute('style', 'width:26px;min-width:26px;max-width:26px;');
       td.innerHTML = '<span style="text-combine-upright:all">10</span>日毎';
       tr.appendChild(td);
     }
@@ -1056,10 +1041,10 @@ function buildMonthlyTable() {
     <th class="s0 s-hdr sec-lbl" style="background:#E5E7EB;writing-mode:horizontal-tb;font-size:10px;padding:2px 1px;text-align:center;color:#6B7280;">区分</th>
     <th class="s1 s-hdr no-cell" style="background:#E5E7EB;font-size:10px;font-weight:800;text-align:center;color:#374151;">No</th>
     <th class="s2 s-hdr desc-cell mon" style="background:#E5E7EB;font-size:11px;font-weight:800;text-align:center;cursor:default;color:#374151;">点　検　項　目</th>
-    <th style="background:#E5E7EB;color:#374151;font-size:8px;font-weight:800;text-align:center;padding:4px;width:54px;min-width:54px;border:1px solid #C8CDD5;">結　果</th>
-    <th style="background:#FEE2E2;color:#991B1B;font-size:8px;font-weight:800;text-align:center;padding:4px;width:66px;min-width:66px;border:1px solid #E4E7EC;">点検者</th>
-    <th style="background:#FEE2E2;color:#991B1B;font-size:8px;font-weight:800;text-align:center;padding:4px;width:66px;min-width:66px;border:1px solid #E4E7EC;line-height:1.4;">全点検確認<br>M課責任者</th>
-    <th style="background:#FEF3C7;color:#92400E;font-size:8px;font-weight:800;text-align:center;padding:4px;border:1px solid #E4E7EC;">補　足</th>
+    <th style="background:#E5E7EB;color:#374151;font-size:8px;font-weight:800;text-align:center;padding:4px;width:240px;min-width:240px;border:1px solid #C8CDD5;">結　果</th>
+    <th style="background:#FEE2E2;color:#991B1B;font-size:8px;font-weight:800;text-align:center;padding:4px;width:200px;min-width:200px;border:1px solid #E4E7EC;">点検者</th>
+    <th style="background:#FEE2E2;color:#991B1B;font-size:8px;font-weight:800;text-align:center;padding:4px;width:200px;min-width:200px;border:1px solid #E4E7EC;line-height:1.4;">全点検確認<br>M課責任者</th>
+    <th style="background:#E5E7EB;color:#6B7280;font-size:8px;font-weight:800;text-align:center;padding:4px;border:1px solid #C8CDD5;">補　足</th>
   `;
   thead.appendChild(tr);
 
@@ -1076,7 +1061,8 @@ function buildMonthlyTable() {
       const td = document.createElement('td');
       td.className = 's0 sec-lbl sec-mon';
       td.rowSpan = MONTHLY_ITEMS.length;
-      td.setAttribute('style', 'width:26px;min-width:26px;max-width:26px;');
+      td.style.width = '26px';
+      td.style.maxWidth = '26px';
       td.textContent = '月次点検';
       tr.appendChild(td);
     }
@@ -1087,7 +1073,7 @@ function buildMonthlyTable() {
     const resultTd = document.createElement('td');
     const resultKey = 'mon_' + item.id;
     resultTd.className = 'dcell';
-    resultTd.setAttribute('style', 'min-width:54px;border:1.5px solid #B0B8C4;');
+    resultTd.setAttribute('style', 'min-width:240px;border:1.5px solid #B0B8C4;');
     resultTd.dataset.item = resultKey;
     resultTd.dataset.day  = 0;
     resultTd.dataset.active = '1';
@@ -1106,7 +1092,7 @@ function buildMonthlyTable() {
         const td = document.createElement('td');
         td.rowSpan = MONTHLY_ITEMS.length;
         td.className = 'sign-cell active';
-        td.setAttribute('style', 'min-width:50px;font-size:9px;vertical-align:middle;text-align:center;height:' + (MONTHLY_ITEMS.length * 48) + 'px;border:1.5px solid #B0B8C4;');
+        td.setAttribute('style', 'min-width:200px;font-size:9px;vertical-align:middle;text-align:center;height:' + (MONTHLY_ITEMS.length * 48) + 'px;border:1.5px solid #B0B8C4;');
         td.dataset.signkey = key;
         td.addEventListener('click', onSignTap);
         td.addEventListener('touchend', function(e) { e.preventDefault(); onSignTap.call(this, e); });
@@ -1114,14 +1100,15 @@ function buildMonthlyTable() {
       });
       const notesTd = document.createElement('td');
       notesTd.rowSpan = MONTHLY_ITEMS.length;
-      notesTd.setAttribute('style', 'background:#FFFBEB;padding:8px 10px;vertical-align:middle;width:160px;border:1.5px solid #B0B8C4;height:' + (MONTHLY_ITEMS.length * 48) + 'px;');
-      notesTd.innerHTML = SUPPLEMENT.map(s =>
-        `<p style="font-size:9px;color:#78350F;line-height:1.9;white-space:normal;word-break:keep-all;">・${s}</p>`
-      ).join('') + `
+      notesTd.setAttribute('style', 'background:#ffffff;padding:8px 10px;vertical-align:middle;width:160px;border:1.5px solid #B0B8C4;height:' + (MONTHLY_ITEMS.length * 48) + 'px;');
+      notesTd.innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;">` +
+        SUPPLEMENT.map(s =>
+          `<p style="font-size:16px;color:#78350F;line-height:1.6;white-space:normal;word-break:keep-all;margin:0;">・${s}</p>`
+        ).join('') + `</div>` + `
         <div style="margin-top:8px;padding-top:6px;border-top:1px solid #F0E0A0;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-          <span style="display:inline-flex;align-items:center;gap:3px;font-size:9px;color:#374151;"><span style="width:18px;height:18px;border-radius:4px;background:#F0FDF4;color:#16A34A;font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;">○</span>正常</span>
-          <span style="display:inline-flex;align-items:center;gap:3px;font-size:9px;color:#374151;"><span style="width:18px;height:18px;border-radius:4px;background:#FEF2F2;color:#DC2626;font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;">×</span>異常</span>
-          <span style="display:inline-flex;align-items:center;gap:3px;font-size:9px;color:#374151;"><span style="width:18px;height:18px;border-radius:4px;background:#F9FAFB;color:#9CA3AF;font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;">／</span>対象外</span>
+          <span style="display:inline-flex;align-items:center;gap:3px;font-size:13px;color:#374151;"><span style="width:18px;height:18px;border-radius:4px;background:#F0FDF4;color:#16A34A;font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;">○</span>正常</span>
+          <span style="display:inline-flex;align-items:center;gap:3px;font-size:13px;color:#374151;"><span style="width:18px;height:18px;border-radius:4px;background:#FEF2F2;color:#DC2626;font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;">×</span>異常</span>
+          <span style="display:inline-flex;align-items:center;gap:3px;font-size:13px;color:#374151;"><span style="width:18px;height:18px;border-radius:4px;background:#F9FAFB;color:#9CA3AF;font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;">／</span>対象外</span>
         </div>
       `;
       tr.appendChild(notesTd);
@@ -1469,6 +1456,169 @@ function patchSave() {
 buildTable();
 loadData();
 restoreUI();
+</script>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     Firestore 読み込みモジュール
+     ① このブロックは既存 </script> の直後に挿入済み
+     ② MACHINE_ID / YEAR / MONTH を帳票に合わせて変更してください
+     ══════════════════════════════════════════════════════════ -->
+<script type="module">
+import { initializeApp }                      from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getFirestore, collection, getDocs }  from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+// ── Firebase 設定 ───────────────────────────────────────────
+const firebaseConfig = {
+  apiKey:     "AIzaSyA6fxlaWUULIMT3bC-Ahul-izBUHziY6FI",
+  authDomain: "daily-inspection-f0751.firebaseapp.com",
+  projectId:  "daily-inspection-f0751",
+};
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+// ── 帳票に合わせた設定値（月が変わったらここだけ修正）─────
+const MACHINE_ID = '2-A41-048';   // ヘッダーの「設備No.」と一致させる
+const YEAR       = 2026;
+const MONTH      = 4;              // 1始まり（4月 → 4）
+const YEAR_MONTH = `${YEAR}-${String(MONTH).padStart(2, '0')}`;  // "2026-04"
+
+// ── Firestoreステータス → 帳票表示文字 ──────────────────────
+// 保存側: "ok"|"ng"  ／  帳票表示: "○"|"×"
+const FS_TO_DISPLAY = { ok: '○', ng: '×' };
+
+// ── ラベル → recordsキー変換 ────────────────────────────────
+// 保存側が "[定期]" / "[1ヶ月]" プレフィックスを付与しているので
+// それを判定キーにして帳票のセルキーに変換する
+function labelToRecordKey(label, day) {
+  const period = day <= 10 ? 1 : day <= 20 ? 2 : 3;
+
+  // ── 10日毎点検（定期）───────────────────────────────────────
+  if (label.includes('[定期]')) {
+    if (label.includes('フィルター'))                                 return `ten_5_p${period}`;
+    if (label.includes('外部ファン') || label.includes('フィン'))     return `ten_6_p${period}`;
+    if (label.includes('油圧ポンプ') || label.includes('ラジエター')) return `ten_7_p${period}`;
+    if (label.includes('作動油量'))                                   return `ten_8_p${period}`;
+    if (label.includes('クーラーフィルタ'))                           return `ten_9_p${period}`;
+    console.warn('[Firestore] [定期] ラベル未対応:', label);
+    return null;
+  }
+
+  // ── 月次点検 ─────────────────────────────────────────────────
+  if (label.includes('[1ヶ月]')) {
+    if (label.includes('フィルタ交換') || label.includes('ファイバー')) return 'mon_10';
+    if (label.includes('バッテリー'))                                  return 'mon_11';
+    if (label.includes('汚れ') || label.includes('破損'))             return 'mon_12';
+    console.warn('[Firestore] [1ヶ月] ラベル未対応:', label);
+    return null;
+  }
+
+  // ── 日常点検（プレフィックスなし）──────────────────────────
+  if (label.includes('潤滑油'))                                       return `1_${day}`;
+  if (label.includes('キリコ'))                                       return `2_${day}`;
+  if (label.includes('油漏れ') || label.includes('エア'))             return `3_${day}`;
+  if (label.includes('制御盤扉'))                                     return `4_${day}`;
+
+  console.warn('[Firestore] ラベルマッピング未対応:', label);
+  return null;
+}
+
+// ── セルが既に入力済みか判定（localStorage優先のため）───────
+function isCellFilled(key) {
+  let td = null;
+  if (key.startsWith('ten_') || key.startsWith('mon_')) {
+    td = document.querySelector(`.dcell[data-item="${key}"]`);
+  } else {
+    const [itemId, day] = key.split('_');
+    td = document.querySelector(`.dcell[data-item="${itemId}"][data-day="${day}"]`);
+  }
+  if (!td) return false;
+  return td.classList.contains('ok') || td.classList.contains('ng') || td.classList.contains('na');
+}
+
+// ── Firestoreデータをセルに直接反映 ─────────────────────────
+function applyToCell(key, displayStatus) {
+  let td = null;
+  if (key.startsWith('ten_') || key.startsWith('mon_')) {
+    td = document.querySelector(`.dcell[data-item="${key}"]`);
+  } else {
+    const [itemId, day] = key.split('_');
+    td = document.querySelector(`.dcell[data-item="${itemId}"][data-day="${day}"]`);
+  }
+  if (!td) {
+    console.warn('[Firestore] 対応セルが見つかりません key:', key);
+    return;
+  }
+  // renderCell は通常 <script> で定義されグローバルに公開されている
+  if (typeof window.renderCell === 'function') {
+    window.renderCell(td, displayStatus);
+  } else {
+    // フォールバック: renderCell が参照できない場合
+    td.textContent = displayStatus;
+    td.classList.remove('ok', 'ng', 'na');
+    if (displayStatus === '○') td.classList.add('ok');
+    else if (displayStatus === '×') td.classList.add('ng');
+    else if (displayStatus === '／') td.classList.add('na');
+  }
+}
+
+// ── メイン: Firestoreからデータ取得 ─────────────────────────
+async function loadFromFirestore() {
+  console.log(`[Firestore] 読み込み開始: inspections/${MACHINE_ID}/${YEAR_MONTH}`);
+  try {
+    const colRef   = collection(db, 'inspections', MACHINE_ID, YEAR_MONTH);
+    const snapshot = await getDocs(colRef);
+
+    if (snapshot.empty) {
+      console.log('[Firestore] データなし — このパスにドキュメントが存在しません');
+      return;
+    }
+
+    let applied = 0;
+    let skipped = 0;
+
+    snapshot.forEach(docSnap => {
+      const dateStr = docSnap.id;   // 例: "2026-04-15"
+      const data    = docSnap.data();
+      console.log('[Firestore] ドキュメント取得:', dateStr, data);
+
+      const dayPart = parseInt((dateStr.split('-')[2] || ''), 10);
+      if (isNaN(dayPart)) {
+        console.warn('[Firestore] 日付解析失敗:', dateStr);
+        return;
+      }
+
+      const items = data.items || {};
+      Object.entries(items).forEach(([label, fsStatus]) => {
+        const displayStatus = FS_TO_DISPLAY[fsStatus];
+        if (!displayStatus) return;  // "ok"/"ng" 以外はスキップ
+
+        const key = labelToRecordKey(label, dayPart);
+        if (!key) return;
+
+        // localStorage にデータがある場合は上書きしない（localStorage優先）
+        if (isCellFilled(key)) {
+          skipped++;
+          return;
+        }
+
+        applyToCell(key, displayStatus);
+        applied++;
+      });
+    });
+
+    console.log(`[Firestore] 反映完了 — 適用: ${applied}件 / スキップ(localStorage優先): ${skipped}件`);
+  } catch (err) {
+    console.error('[Firestore] 読み込みエラー:', err);
+  }
+}
+
+// ── 起動: buildTable → loadData → restoreUI の後に実行 ───────
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => setTimeout(loadFromFirestore, 150));
+} else {
+  setTimeout(loadFromFirestore, 150);
+}
 </script>
 </body>
 </html>
