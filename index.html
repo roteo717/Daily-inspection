@@ -1699,6 +1699,32 @@ async function loadFromFirestore() {
 // セレクターモジュール（追加③）から呼び出せるようにする。
 window._loadFromFirestore = loadFromFirestore;
 console.log('[Firestore] window._loadFromFirestore を公開しました');
+
+// ══════════════════════════════════════════════════════════
+// 【追加】machines コレクションから設備マスタを取得して window に公開
+//   呼び出し元: セレクターモジュール（追加③）の initFilterSelector
+// ══════════════════════════════════════════════════════════
+window._loadMachineList = async function() {
+  try {
+    console.log('[Firestore] machines コレクション読み込み開始');
+    const snapshot = await getDocs(collection(db, 'machines'));
+    const machines = [];
+    snapshot.forEach(docSnap => {
+      const data = docSnap.data();
+      machines.push({
+        machineId: docSnap.id,
+        label:     data.name ? `${docSnap.id}　${data.name}` : docSnap.id
+      });
+    });
+    console.log('[Firestore] machines 取得完了 — 件数:', machines.length, machines);
+    return machines;
+  } catch (err) {
+    console.error('[Firestore] machines 読み込みエラー:', err);
+    return [];
+  }
+};
+console.log('[Firestore] window._loadMachineList を公開しました');
+
 // ※ 初回実行はセレクターモジュール側に委譲（追加③の DOMContentLoaded が呼び出す）
 </script>
 
@@ -1708,35 +1734,48 @@ console.log('[Firestore] window._loadFromFirestore を公開しました');
      ══════════════════════════════════════════════════════════ -->
 <script>
 /* ──────────────────────────────────────────────────────
-   ① 設備マスタ（Firestoreの inspections/{machineId} と対応）
+   ① 設備マスタ（Firestoreの machines コレクションから動的取得）
    ──────────────────────────────────────────────────────
-   machineId : Firestoreのドキュメントパスに使うID
-   label     : セレクターに表示する名称
+   【変更】MACHINE_LIST は静的ハードコードをやめ、Firestore から取得した
+   結果で上書きする。フォールバック用に空配列で初期化しておく。
    ────────────────────────────────────────────────────── */
-const MACHINE_LIST = [
-  { machineId: '2-A41-048', label: '2-A41-048　NC旋盤（日立 TS15）' },
-  { machineId: '2-A41-049', label: '2-A41-049　マシニングセンタ（DMG）' },
-  { machineId: '2-A41-050', label: '2-A41-050　NC研削盤（岡本工作）' },
-  // ▶ 追加設備はここに { machineId: 'xxx', label: '表示名' } を追記
-];
+let MACHINE_LIST = [];  // Firestore から上書きされる
 
 /* ──────────────────────────────────────────────────────
    ② 初期値：ページロード時のデフォルト設備・年月
+      ※ 設備IDはFirestore取得後に先頭の machineId で上書きされる
    ────────────────────────────────────────────────────── */
-const DEFAULT_MACHINE_ID  = '2-A41-048';
 const DEFAULT_YEAR_MONTH  = '2026-04';   // input[type=month] の value 形式
 
 /* ──────────────────────────────────────────────────────
    ③ フィルターバーを動的生成して app-header の直後に挿入
+      【変更】引数 machineList を受け取って options を生成する
    ────────────────────────────────────────────────────── */
-function createFilterBar() {
+function createFilterBar(machineList) {
+  // 既存バーがあれば再利用（select を更新するだけ）
+  const existing = document.getElementById('filter-bar');
+  if (existing) {
+    const sel = document.getElementById('fs-machine-select');
+    if (sel) {
+      sel.innerHTML = machineList.length > 0
+        ? machineList.map((m, idx) =>
+            `<option value="${m.machineId}"${idx === 0 ? ' selected' : ''}>${m.label}</option>`
+          ).join('')
+        : '<option value="">（設備がありません）</option>';
+    }
+    console.log('[FilterBar] select options を更新しました — 件数:', machineList.length);
+    return;
+  }
+
   const bar = document.createElement('div');
   bar.id = 'filter-bar';
 
-  // 設備 select の options を MACHINE_LIST から生成
-  const machineOptions = MACHINE_LIST.map(m =>
-    `<option value="${m.machineId}"${m.machineId === DEFAULT_MACHINE_ID ? ' selected' : ''}>${m.label}</option>`
-  ).join('');
+  // 設備 select の options を machineList から生成
+  const machineOptions = machineList.length > 0
+    ? machineList.map((m, idx) =>
+        `<option value="${m.machineId}"${idx === 0 ? ' selected' : ''}>${m.label}</option>`
+      ).join('')
+    : '<option value="">（設備がありません）</option>';
 
   bar.innerHTML = `
     <span class="filter-label">設備</span>
@@ -1752,7 +1791,7 @@ function createFilterBar() {
       ↻ 再読み込み
     </button>
 
-    <span id="filter-status">待機中</span>
+    <span id="filter-status">読み込み中…</span>
   `;
 
   // app-header の直後に挿入（既存HTMLを変更しない）
@@ -1767,20 +1806,17 @@ function createFilterBar() {
   document.getElementById('fs-machine-select').addEventListener('change', reloadFromFirestoreSelector);
   document.getElementById('fs-month-input').addEventListener('change', reloadFromFirestoreSelector);
 
-  console.log('[FilterBar] フィルターバーを挿入しました');
+  console.log('[FilterBar] フィルターバーを挿入しました — 設備数:', machineList.length);
 }
 
 /* ──────────────────────────────────────────────────────
    ④ 全 dcell をリセット（Firestoreデータを消去し再描画に備える）
-      localStorage 由来のデータは restoreUI() が再適用するので消しても安全
    ────────────────────────────────────────────────────── */
 function clearAllDcells() {
   document.querySelectorAll('.dcell').forEach(td => {
-    // inactive / holiday セルはスキップ（触らない）
     if (td.classList.contains('inactive') || td.classList.contains('holiday')) return;
     td.classList.remove('ok', 'ng', 'na');
     td.textContent = '';
-    // opacity を元に戻す（dcell の CSS で 0.65 がデフォルト）
     td.style.opacity = '';
   });
   console.log('[FilterBar] dcell をリセットしました');
@@ -1788,15 +1824,11 @@ function clearAllDcells() {
 
 /* ──────────────────────────────────────────────────────
    ⑤ メイン切り替え処理
-      ┌─ 1. window グローバルに新しい設備ID・年月をセット
-      │  2. dcell リセット
-      │  3. localStorage データを復元（restoreUI）
-      │  4. Firestore から再取得（_loadFromFirestore）
-      └─ ※ _loadFromFirestore は Firestore モジュールが window に公開済み
    ────────────────────────────────────────────────────── */
 async function reloadFromFirestoreSelector() {
-  const machineId = document.getElementById('fs-machine-select').value;
-  const yearMonth = document.getElementById('fs-month-input').value; // "YYYY-MM"
+  const sel = document.getElementById('fs-machine-select');
+  const machineId = sel ? sel.value : '';
+  const yearMonth = document.getElementById('fs-month-input').value;
 
   if (!machineId || !yearMonth) {
     console.warn('[FilterBar] 設備または年月が未選択です');
@@ -1805,73 +1837,89 @@ async function reloadFromFirestoreSelector() {
 
   console.log(`[FilterBar] 切り替え: machineId=${machineId} / yearMonth=${yearMonth}`);
 
-  // ── ステータス表示を更新
-  const statusEl = document.getElementById('filter-status');
+  const statusEl  = document.getElementById('filter-status');
   const reloadBtn = document.getElementById('fs-reload-btn');
-  statusEl.textContent = '読み込み中…';
-  statusEl.className   = '';
-  reloadBtn.classList.add('loading');
+  if (statusEl)  { statusEl.textContent = '読み込み中…'; statusEl.className = ''; }
+  if (reloadBtn) reloadBtn.classList.add('loading');
 
-  // ── window グローバルをセット（Firestoreモジュールが参照する）
+  // window グローバルをセット（Firestoreモジュールが参照する）
   window._fs_machineId = machineId;
   window._fs_yearMonth = yearMonth;
 
-  // ── セルをリセット → localStorage復元 → Firestore再取得
   clearAllDcells();
   if (typeof restoreUI === 'function') restoreUI();
 
-  // _loadFromFirestore は Firestoreモジュールが window に公開している
   if (typeof window._loadFromFirestore === 'function') {
     try {
       await window._loadFromFirestore();
-      statusEl.textContent = `✓ ${machineId} / ${yearMonth}`;
-      statusEl.className   = 'ok';
+      if (statusEl) { statusEl.textContent = `✓ ${machineId} / ${yearMonth}`; statusEl.className = 'ok'; }
     } catch (e) {
       console.error('[FilterBar] Firestore 読み込みエラー:', e);
-      statusEl.textContent = '読み込み失敗';
-      statusEl.className   = 'err';
+      if (statusEl) { statusEl.textContent = '読み込み失敗'; statusEl.className = 'err'; }
     }
   } else {
-    // Firestore モジュールがまだ初期化されていない場合（リトライ）
     console.warn('[FilterBar] _loadFromFirestore が未定義です。500ms後にリトライ…');
     setTimeout(reloadFromFirestoreSelector, 500);
     return;
   }
 
-  reloadBtn.classList.remove('loading');
+  if (reloadBtn) reloadBtn.classList.remove('loading');
 }
 
 /* ──────────────────────────────────────────────────────
-   ⑥ 初期化：DOMContentLoaded 後にフィルターバーを生成し初回ロード
+   ⑥ 初期化：DOMContentLoaded 後に machines を取得 → バー生成 → 帳票読み込み
+      【変更】Firestore から設備マスタを取得してから createFilterBar を呼ぶ
    ────────────────────────────────────────────────────── */
-function initFilterSelector() {
-  // window グローバルの初期値をセット
-  window._fs_machineId = DEFAULT_MACHINE_ID;
-  window._fs_yearMonth  = DEFAULT_YEAR_MONTH;
+async function initFilterSelector() {
+  console.log('[FilterBar] initFilterSelector 開始');
 
-  createFilterBar();
+  // ── Firebaseモジュール（type="module"）の公開を待つ ──
+  const waitForModules = () => new Promise(resolve => {
+    const check = () => {
+      if (
+        typeof window._loadFromFirestore === 'function' &&
+        typeof window._loadMachineList   === 'function'
+      ) {
+        resolve();
+      } else {
+        console.log('[FilterBar] Firebaseモジュール初期化待ち…');
+        setTimeout(check, 200);
+      }
+    };
+    check();
+  });
 
-  // Firestoreモジュールの公開を待って初回データ取得
-  // （ES module の実行完了を確実に待つため少し遅延）
-  const waitAndLoad = () => {
-    if (typeof window._loadFromFirestore === 'function') {
-      console.log('[FilterBar] 初回 Firestore 読み込みを実行します');
-      window._loadFromFirestore()
-        .then(() => {
-          const statusEl = document.getElementById('filter-status');
-          if (statusEl) {
-            statusEl.textContent = `✓ ${DEFAULT_MACHINE_ID} / ${DEFAULT_YEAR_MONTH}`;
-            statusEl.className   = 'ok';
-          }
-        })
-        .catch(e => console.error('[FilterBar] 初回読み込みエラー:', e));
-    } else {
-      console.log('[FilterBar] _loadFromFirestore 未公開 → 200ms 後リトライ');
-      setTimeout(waitAndLoad, 200);
+  await waitForModules();
+  console.log('[FilterBar] Firebaseモジュール公開を確認');
+
+  // ── Step 1: machines コレクションから設備マスタを取得 ──
+  MACHINE_LIST = await window._loadMachineList();
+
+  // ── Step 2: フィルターバーを生成（設備 select を動的に構築）──
+  const firstMachineId = MACHINE_LIST.length > 0 ? MACHINE_LIST[0].machineId : '';
+  window._fs_machineId = firstMachineId;
+  window._fs_yearMonth = DEFAULT_YEAR_MONTH;
+  createFilterBar(MACHINE_LIST);
+
+  // ── Step 3: 初回 Firestore データ取得 ──
+  if (firstMachineId) {
+    console.log('[FilterBar] 初回 Firestore 読み込み:', firstMachineId, DEFAULT_YEAR_MONTH);
+    try {
+      await window._loadFromFirestore();
+      const statusEl = document.getElementById('filter-status');
+      if (statusEl) {
+        statusEl.textContent = `✓ ${firstMachineId} / ${DEFAULT_YEAR_MONTH}`;
+        statusEl.className   = 'ok';
+      }
+    } catch (e) {
+      console.error('[FilterBar] 初回読み込みエラー:', e);
     }
-  };
+  } else {
+    console.warn('[FilterBar] machinesコレクションが空です。入力アプリで設備を追加してください。');
+    const statusEl = document.getElementById('filter-status');
+    if (statusEl) { statusEl.textContent = '設備なし'; statusEl.className = 'err'; }
+  }
 
-  setTimeout(waitAndLoad, 200);
   console.log('[FilterBar] initFilterSelector 完了');
 }
 
