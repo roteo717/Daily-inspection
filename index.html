@@ -664,6 +664,88 @@ th, td { border: 1px solid #C8CDD5; vertical-align: middle; }
 #startup-start:active { background: #1A252F; }
 
 </style>
+
+<!-- ══════════════════════════════════════════════════
+     ▼▼▼ 追加①：設備・月フィルターバー CSS ▼▼▼
+     ══════════════════════════════════════════════════ -->
+<style>
+/* ─── FILTER BAR ───────────────────────────────────── */
+#filter-bar {
+  background: linear-gradient(135deg, #1A252F 0%, #2C3E50 100%);
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  border-bottom: 2px solid rgba(255,255,255,0.10);
+  position: sticky;
+  top: 88px; /* app-header の高さに合わせて調整 */
+  z-index: 40;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+}
+.filter-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: rgba(255,255,255,0.55);
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.filter-select,
+.filter-month {
+  flex: 1;
+  min-width: 130px;
+  max-width: 220px;
+  height: 34px;
+  background: rgba(255,255,255,0.10);
+  border: 1.5px solid rgba(255,255,255,0.28);
+  border-radius: 8px;
+  color: #F1F2F6;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: inherit;
+  padding: 0 10px;
+  outline: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+.filter-select:focus,
+.filter-month:focus {
+  border-color: #F1C40F;
+  background: rgba(255,255,255,0.16);
+}
+/* select の option は OS依存なので背景を合わせる */
+.filter-select option { background: #2C3E50; color: #F1F2F6; }
+.filter-reload-btn {
+  height: 34px;
+  padding: 0 14px;
+  background: rgba(241,196,15,0.18);
+  border: 1.5px solid rgba(241,196,15,0.55);
+  border-radius: 8px;
+  color: #F1C40F;
+  font-size: 11px;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, transform 0.1s;
+  letter-spacing: 0.04em;
+}
+.filter-reload-btn:active { transform: scale(0.94); background: rgba(241,196,15,0.30); }
+.filter-reload-btn.loading { opacity: 0.55; pointer-events: none; }
+#filter-status {
+  font-size: 10px;
+  color: rgba(255,255,255,0.45);
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  min-width: 60px;
+}
+#filter-status.ok  { color: #2ECC71; }
+#filter-status.err { color: #E74C3C; }
+</style>
+<!-- ▲▲▲ 追加① ここまで ▲▲▲ -->
 </head>
 <body>
 
@@ -1477,11 +1559,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
-// ── 帳票に合わせた設定値（月が変わったらここだけ修正）─────
-const MACHINE_ID = '2-A41-048';   // ヘッダーの「設備No.」と一致させる
-const YEAR       = 2026;
-const MONTH      = 4;              // 1始まり（4月 → 4）
-const YEAR_MONTH = `${YEAR}-${String(MONTH).padStart(2, '0')}`;  // "2026-04"
+// ── 追加②-A：設備IDと年月を window グローバルから取得（フィルターバーが設定する）──
+// フォールバック値 = 元の固定値。フィルターバー未使用時もそのまま動く。
+const MACHINE_ID = window._fs_machineId || '2-A41-048';
+const YEAR_MONTH = window._fs_yearMonth || '2026-04';
+console.log(`[Firestore] 設定値読み込み: machineId=${MACHINE_ID} / yearMonth=${YEAR_MONTH}`);
 
 // ── Firestoreステータス → 帳票表示文字 ──────────────────────
 // 保存側: "ok"|"ng"  ／  帳票表示: "○"|"×"
@@ -1613,12 +1695,193 @@ async function loadFromFirestore() {
   }
 }
 
-// ── 起動: buildTable → loadData → restoreUI の後に実行 ───────
+// ── 追加②-B：loadFromFirestore を window に公開 ─────────────
+// セレクターモジュール（追加③）から呼び出せるようにする。
+window._loadFromFirestore = loadFromFirestore;
+console.log('[Firestore] window._loadFromFirestore を公開しました');
+// ※ 初回実行はセレクターモジュール側に委譲（追加③の DOMContentLoaded が呼び出す）
+</script>
+
+<!-- ══════════════════════════════════════════════════════════
+     ▼▼▼ 追加③：設備・月セレクター + 動的Firestore切り替えモジュール ▼▼▼
+     既存HTMLは一切変更せず、このブロックを丸ごと追記するだけで動作します。
+     ══════════════════════════════════════════════════════════ -->
+<script>
+/* ──────────────────────────────────────────────────────
+   ① 設備マスタ（Firestoreの inspections/{machineId} と対応）
+   ──────────────────────────────────────────────────────
+   machineId : Firestoreのドキュメントパスに使うID
+   label     : セレクターに表示する名称
+   ────────────────────────────────────────────────────── */
+const MACHINE_LIST = [
+  { machineId: '2-A41-048', label: '2-A41-048　NC旋盤（日立 TS15）' },
+  { machineId: '2-A41-049', label: '2-A41-049　マシニングセンタ（DMG）' },
+  { machineId: '2-A41-050', label: '2-A41-050　NC研削盤（岡本工作）' },
+  // ▶ 追加設備はここに { machineId: 'xxx', label: '表示名' } を追記
+];
+
+/* ──────────────────────────────────────────────────────
+   ② 初期値：ページロード時のデフォルト設備・年月
+   ────────────────────────────────────────────────────── */
+const DEFAULT_MACHINE_ID  = '2-A41-048';
+const DEFAULT_YEAR_MONTH  = '2026-04';   // input[type=month] の value 形式
+
+/* ──────────────────────────────────────────────────────
+   ③ フィルターバーを動的生成して app-header の直後に挿入
+   ────────────────────────────────────────────────────── */
+function createFilterBar() {
+  const bar = document.createElement('div');
+  bar.id = 'filter-bar';
+
+  // 設備 select の options を MACHINE_LIST から生成
+  const machineOptions = MACHINE_LIST.map(m =>
+    `<option value="${m.machineId}"${m.machineId === DEFAULT_MACHINE_ID ? ' selected' : ''}>${m.label}</option>`
+  ).join('');
+
+  bar.innerHTML = `
+    <span class="filter-label">設備</span>
+    <select id="fs-machine-select" class="filter-select" title="設備を選択">
+      ${machineOptions}
+    </select>
+
+    <span class="filter-label">年月</span>
+    <input id="fs-month-input" class="filter-month" type="month"
+           value="${DEFAULT_YEAR_MONTH}" title="年月を選択">
+
+    <button id="fs-reload-btn" class="filter-reload-btn" onclick="reloadFromFirestoreSelector()">
+      ↻ 再読み込み
+    </button>
+
+    <span id="filter-status">待機中</span>
+  `;
+
+  // app-header の直後に挿入（既存HTMLを変更しない）
+  const header = document.querySelector('.app-header');
+  if (header && header.nextSibling) {
+    header.parentNode.insertBefore(bar, header.nextSibling);
+  } else if (header) {
+    header.parentNode.appendChild(bar);
+  }
+
+  // イベントリスナー登録
+  document.getElementById('fs-machine-select').addEventListener('change', reloadFromFirestoreSelector);
+  document.getElementById('fs-month-input').addEventListener('change', reloadFromFirestoreSelector);
+
+  console.log('[FilterBar] フィルターバーを挿入しました');
+}
+
+/* ──────────────────────────────────────────────────────
+   ④ 全 dcell をリセット（Firestoreデータを消去し再描画に備える）
+      localStorage 由来のデータは restoreUI() が再適用するので消しても安全
+   ────────────────────────────────────────────────────── */
+function clearAllDcells() {
+  document.querySelectorAll('.dcell').forEach(td => {
+    // inactive / holiday セルはスキップ（触らない）
+    if (td.classList.contains('inactive') || td.classList.contains('holiday')) return;
+    td.classList.remove('ok', 'ng', 'na');
+    td.textContent = '';
+    // opacity を元に戻す（dcell の CSS で 0.65 がデフォルト）
+    td.style.opacity = '';
+  });
+  console.log('[FilterBar] dcell をリセットしました');
+}
+
+/* ──────────────────────────────────────────────────────
+   ⑤ メイン切り替え処理
+      ┌─ 1. window グローバルに新しい設備ID・年月をセット
+      │  2. dcell リセット
+      │  3. localStorage データを復元（restoreUI）
+      │  4. Firestore から再取得（_loadFromFirestore）
+      └─ ※ _loadFromFirestore は Firestore モジュールが window に公開済み
+   ────────────────────────────────────────────────────── */
+async function reloadFromFirestoreSelector() {
+  const machineId = document.getElementById('fs-machine-select').value;
+  const yearMonth = document.getElementById('fs-month-input').value; // "YYYY-MM"
+
+  if (!machineId || !yearMonth) {
+    console.warn('[FilterBar] 設備または年月が未選択です');
+    return;
+  }
+
+  console.log(`[FilterBar] 切り替え: machineId=${machineId} / yearMonth=${yearMonth}`);
+
+  // ── ステータス表示を更新
+  const statusEl = document.getElementById('filter-status');
+  const reloadBtn = document.getElementById('fs-reload-btn');
+  statusEl.textContent = '読み込み中…';
+  statusEl.className   = '';
+  reloadBtn.classList.add('loading');
+
+  // ── window グローバルをセット（Firestoreモジュールが参照する）
+  window._fs_machineId = machineId;
+  window._fs_yearMonth = yearMonth;
+
+  // ── セルをリセット → localStorage復元 → Firestore再取得
+  clearAllDcells();
+  if (typeof restoreUI === 'function') restoreUI();
+
+  // _loadFromFirestore は Firestoreモジュールが window に公開している
+  if (typeof window._loadFromFirestore === 'function') {
+    try {
+      await window._loadFromFirestore();
+      statusEl.textContent = `✓ ${machineId} / ${yearMonth}`;
+      statusEl.className   = 'ok';
+    } catch (e) {
+      console.error('[FilterBar] Firestore 読み込みエラー:', e);
+      statusEl.textContent = '読み込み失敗';
+      statusEl.className   = 'err';
+    }
+  } else {
+    // Firestore モジュールがまだ初期化されていない場合（リトライ）
+    console.warn('[FilterBar] _loadFromFirestore が未定義です。500ms後にリトライ…');
+    setTimeout(reloadFromFirestoreSelector, 500);
+    return;
+  }
+
+  reloadBtn.classList.remove('loading');
+}
+
+/* ──────────────────────────────────────────────────────
+   ⑥ 初期化：DOMContentLoaded 後にフィルターバーを生成し初回ロード
+   ────────────────────────────────────────────────────── */
+function initFilterSelector() {
+  // window グローバルの初期値をセット
+  window._fs_machineId = DEFAULT_MACHINE_ID;
+  window._fs_yearMonth  = DEFAULT_YEAR_MONTH;
+
+  createFilterBar();
+
+  // Firestoreモジュールの公開を待って初回データ取得
+  // （ES module の実行完了を確実に待つため少し遅延）
+  const waitAndLoad = () => {
+    if (typeof window._loadFromFirestore === 'function') {
+      console.log('[FilterBar] 初回 Firestore 読み込みを実行します');
+      window._loadFromFirestore()
+        .then(() => {
+          const statusEl = document.getElementById('filter-status');
+          if (statusEl) {
+            statusEl.textContent = `✓ ${DEFAULT_MACHINE_ID} / ${DEFAULT_YEAR_MONTH}`;
+            statusEl.className   = 'ok';
+          }
+        })
+        .catch(e => console.error('[FilterBar] 初回読み込みエラー:', e));
+    } else {
+      console.log('[FilterBar] _loadFromFirestore 未公開 → 200ms 後リトライ');
+      setTimeout(waitAndLoad, 200);
+    }
+  };
+
+  setTimeout(waitAndLoad, 200);
+  console.log('[FilterBar] initFilterSelector 完了');
+}
+
+/* ── エントリーポイント ── */
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => setTimeout(loadFromFirestore, 150));
+  document.addEventListener('DOMContentLoaded', initFilterSelector);
 } else {
-  setTimeout(loadFromFirestore, 150);
+  initFilterSelector();
 }
 </script>
+<!-- ▲▲▲ 追加③ ここまで ▲▲▲ -->
 </body>
 </html>
