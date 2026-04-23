@@ -23,7 +23,7 @@ body {
 
 /* ─── APP HEADER ────────────────────────────────── */
 .app-header {
-  background: linear-gradient(135deg, #2C3E50 0%, #1A252F 100%);
+  background: #1A252F;
   color: #fff;
   padding: 12px 14px 10px;
   position: sticky;
@@ -671,7 +671,7 @@ th, td { border: 1px solid #C8CDD5; vertical-align: middle; }
 <style>
 /* ─── FILTER BAR ───────────────────────────────────── */
 #filter-bar {
-  background: linear-gradient(135deg, #1A252F 0%, #2C3E50 100%);
+  background: #1A252F;
   padding: 8px 12px;
   display: flex;
   align-items: center;
@@ -679,7 +679,7 @@ th, td { border: 1px solid #C8CDD5; vertical-align: middle; }
   flex-wrap: wrap;
   border-bottom: 2px solid rgba(255,255,255,0.10);
   position: sticky;
-  top: 88px; /* app-header の高さに合わせて調整 */
+  top: 0; /* JSで app-header の実際の高さに動的設定 */
   z-index: 40;
   box-shadow: 0 3px 10px rgba(0,0,0,0.25);
 }
@@ -752,7 +752,6 @@ th, td { border: 1px solid #C8CDD5; vertical-align: middle; }
 <!-- ━━ HEADER ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 <div class="app-header">
   <div class="app-header-top">
-    <div class="app-header-title">日常・定期点検表　（2026年　4月度）</div>
     <div id="header-inspector" onclick="toggleLogoutMenu()">
       <div class="insp-avatar">
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -770,13 +769,7 @@ th, td { border: 1px solid #C8CDD5; vertical-align: middle; }
       </button>
     </div>
   </div>
-  <table class="equip-info-table">
-    <tr>
-      <td>設備No.　<b>2-A41-048</b></td>
-      <td>設備名：NC旋盤　　型式：日立 TS15</td>
-      <td>管理担当部門：M課</td>
-    </tr>
-  </table>
+
 </div>
 
 <!-- ━━ STARTUP MODAL ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
@@ -1569,39 +1562,40 @@ console.log(`[Firestore] 設定値読み込み: machineId=${MACHINE_ID} / yearMo
 // 保存側: "ok"|"ng"  ／  帳票表示: "○"|"×"
 const FS_TO_DISPLAY = { ok: '○', ng: '×' };
 
-// ── ラベル → recordsキー変換 ────────────────────────────────
-// 保存側が "[定期]" / "[1ヶ月]" プレフィックスを付与しているので
-// それを判定キーにして帳票のセルキーに変換する
-function labelToRecordKey(label, day) {
+// ── 要素IDキー → recordsキー変換 ────────────────────────────
+// 入力側が保存する要素ID形式（例: f0_1 / periodic_f0_2 / monthly_f0_0）を
+// 帳票のセルキーに変換する。facIdx は無視して itemIdx のみ使用する。
+function skToRecordKey(sk, day) {
   const period = day <= 10 ? 1 : day <= 20 ? 2 : 3;
 
-  // ── 10日毎点検（定期）───────────────────────────────────────
-  if (label.includes('[定期]')) {
-    if (label.includes('フィルター'))                                 return `ten_5_p${period}`;
-    if (label.includes('外部ファン') || label.includes('フィン'))     return `ten_6_p${period}`;
-    if (label.includes('油圧ポンプ') || label.includes('ラジエター')) return `ten_7_p${period}`;
-    if (label.includes('作動油量'))                                   return `ten_8_p${period}`;
-    if (label.includes('クーラーフィルタ'))                           return `ten_9_p${period}`;
-    console.warn('[Firestore] [定期] ラベル未対応:', label);
-    return null;
+  // ── 定期点検（10日毎）: periodic_f{fi}_{ii} ─────────────────
+  const periodicMatch = sk.match(/^periodic_f\d+_(\d+)$/);
+  if (periodicMatch) {
+    const ii   = parseInt(periodicMatch[1]);
+    const item = TEN_DAY_ITEMS[ii];
+    if (!item) { console.warn('[Firestore] periodic インデックス未対応:', sk); return null; }
+    return `ten_${item.id}_p${period}`;
   }
 
-  // ── 月次点検 ─────────────────────────────────────────────────
-  if (label.includes('[1ヶ月]')) {
-    if (label.includes('フィルタ交換') || label.includes('ファイバー')) return 'mon_10';
-    if (label.includes('バッテリー'))                                  return 'mon_11';
-    if (label.includes('汚れ') || label.includes('破損'))             return 'mon_12';
-    console.warn('[Firestore] [1ヶ月] ラベル未対応:', label);
-    return null;
+  // ── 月次点検: monthly_f{fi}_{ii} ────────────────────────────
+  const monthlyMatch = sk.match(/^monthly_f\d+_(\d+)$/);
+  if (monthlyMatch) {
+    const ii   = parseInt(monthlyMatch[1]);
+    const item = MONTHLY_ITEMS[ii];
+    if (!item) { console.warn('[Firestore] monthly インデックス未対応:', sk); return null; }
+    return `mon_${item.id}`;
   }
 
-  // ── 日常点検（プレフィックスなし）──────────────────────────
-  if (label.includes('潤滑油'))                                       return `1_${day}`;
-  if (label.includes('キリコ'))                                       return `2_${day}`;
-  if (label.includes('油漏れ') || label.includes('エア'))             return `3_${day}`;
-  if (label.includes('制御盤扉'))                                     return `4_${day}`;
+  // ── 日常点検: f{fi}_{ii} ────────────────────────────────────
+  const dailyMatch = sk.match(/^f\d+_(\d+)$/);
+  if (dailyMatch) {
+    const ii   = parseInt(dailyMatch[1]);
+    const item = DAILY_ITEMS[ii];
+    if (!item) { console.warn('[Firestore] daily インデックス未対応:', sk); return null; }
+    return `${item.id}_${day}`;
+  }
 
-  console.warn('[Firestore] ラベルマッピング未対応:', label);
+  console.warn('[Firestore] キー形式未対応:', sk);
   return null;
 }
 
@@ -1670,12 +1664,12 @@ async function loadFromFirestore() {
         return;
       }
 
-      const items = data.items || {};
-      Object.entries(items).forEach(([label, fsStatus]) => {
+      const checks = data.checks || {};   // フィールド名を checks に統一
+      Object.entries(checks).forEach(([sk, fsStatus]) => {
         const displayStatus = FS_TO_DISPLAY[fsStatus];
         if (!displayStatus) return;  // "ok"/"ng" 以外はスキップ
 
-        const key = labelToRecordKey(label, dayPart);
+        const key = skToRecordKey(sk, dayPart);  // 要素IDキー → セルキー
         if (!key) return;
 
         // localStorage にデータがある場合は上書きしない（localStorage優先）
@@ -1748,6 +1742,26 @@ let MACHINE_LIST = [];  // Firestore から上書きされる
 const DEFAULT_YEAR_MONTH  = '2026-04';   // input[type=month] の value 形式
 
 /* ──────────────────────────────────────────────────────
+   ★ filter-bar の top を app-header の実際の高さに合わせる
+      ハードコードをやめて動的計算することで余白・重なりを解消
+   ────────────────────────────────────────────────────── */
+function updateFilterBarTop() {
+  const header    = document.querySelector('.app-header');
+  const filterBar = document.getElementById('filter-bar');
+  if (!header || !filterBar) return;
+  filterBar.style.top = header.offsetHeight + 'px';
+}
+// リサイズ・向き変更時も再計算（debounce付き）
+let _filterBarTopTimer = null;
+window.addEventListener('resize', () => {
+  clearTimeout(_filterBarTopTimer);
+  _filterBarTopTimer = setTimeout(updateFilterBarTop, 80);
+});
+window.addEventListener('orientationchange', () => {
+  setTimeout(updateFilterBarTop, 150);
+});
+
+/* ──────────────────────────────────────────────────────
    ③ フィルターバーを動的生成して app-header の直後に挿入
       【変更】引数 machineList を受け取って options を生成する
    ────────────────────────────────────────────────────── */
@@ -1764,6 +1778,7 @@ function createFilterBar(machineList) {
         : '<option value="">（設備がありません）</option>';
     }
     console.log('[FilterBar] select options を更新しました — 件数:', machineList.length);
+    updateFilterBarTop();
     return;
   }
 
@@ -1805,6 +1820,9 @@ function createFilterBar(machineList) {
   // イベントリスナー登録
   document.getElementById('fs-machine-select').addEventListener('change', reloadFromFirestoreSelector);
   document.getElementById('fs-month-input').addEventListener('change', reloadFromFirestoreSelector);
+
+  // app-header の実際の高さに合わせて top を動的に設定
+  updateFilterBarTop();
 
   console.log('[FilterBar] フィルターバーを挿入しました — 設備数:', machineList.length);
 }
